@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  icon      String    @default("🛒")
+  sortOrder Int       @default(0)
+  products  Product[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  unit        String?
+  price       Int
+  salePrice   Int?
+  saleStart   DateTime?
+  saleEnd     DateTime?
+  stock       Int         @default(0)
+  image       String
+  active      Boolean     @default(true)
+  featured    Boolean     @default(false)
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+
+  @@index([active, categoryId])
+}
+
+model Coupon {
+  id             String    @id @default(cuid())
+  code           String    @unique
+  name           String
+  type           String    @default("PERCENT")
+  value          Int
+  minOrder       Int       @default(0)
+  maxDiscount    Int?
+  startsAt       DateTime?
+  endsAt         DateTime?
+  usageLimit     Int?
+  usedCount      Int       @default(0)
+  stackWithSales Boolean   @default(true)
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Order {
+  id                    String      @id @default(cuid())
+  customerName          String
+  email                 String
+  phone                 String
+  address               String
+  postalCode            String
+  city                  String
+  deliveryMethod        String      @default("PICKUP")
+  deliverySlot          String?
+  notes                 String?
+  paymentMethod         String      @default("PAY_AT_PICKUP")
+  paid                  Boolean     @default(false)
+  status                String      @default("NEW")
+  originalSubtotal      Int         @default(0)
+  itemDiscountTotal     Int         @default(0)
+  subtotalAfterItemDisc Int         @default(0)
+  couponCode            String?
+  orderDiscountTotal    Int         @default(0)
+  deliveryFee           Int         @default(0)
+  total                 Int
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @default(now()) @updatedAt
+  items                 OrderItem[]
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id               String  @id @default(cuid())
+  orderId          String
+  productId        String
+  name             String
+  regularUnitPrice Int     @default(0)
+  unitPrice        Int
+  itemDiscount     Int     @default(0)
+  quantity         Int
+  order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product          Product @relation(fields: [productId], references: [id])
+}

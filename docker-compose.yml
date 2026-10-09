@@ -1,0 +1,83 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ganapathy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ganapathy}
+      POSTGRES_DB: ganapathy
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ganapathy -d ganapathy"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://ganapathy:${POSTGRES_PASSWORD:-ganapathy}@db:5432/ganapathy?schema=public
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ganapathy.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-me-now}
+      SESSION_SECRET: ${SESSION_SECRET:-development-secret-change-before-production}
+      INSECURE_COOKIES: ${INSECURE_COOKIES:-1}
+      UPLOAD_DIR: /app/public/uploads
+      NEXT_PUBLIC_STORE_NAME: ${NEXT_PUBLIC_STORE_NAME:-Ganapathy Super Market}
+      STORE_PHONE: ${STORE_PHONE:-}
+      STORE_EMAIL: ${STORE_EMAIL:-}
+      STORE_ADDRESS: ${STORE_ADDRESS:-}
+      STORE_HOURS: ${STORE_HOURS:-}
+      SWISH_NUMBER: ${SWISH_NUMBER:-}
+      STORE_MAP_URL: ${STORE_MAP_URL:-}
+      WHATSAPP_GROUP_URL: ${WHATSAPP_GROUP_URL:-}
+      COMPANY_NAME: ${COMPANY_NAME:-}
+      COMPANY_ORG_NUMBER: ${COMPANY_ORG_NUMBER:-}
+      COMPANY_TEXTFREE_NUMBER: ${COMPANY_TEXTFREE_NUMBER:-}
+      DELIVERY_AREA: ${DELIVERY_AREA:-Helsingborg}
+      DELIVERY_POSTCODE_PREFIXES: ${DELIVERY_POSTCODE_PREFIXES:-250,251,252,253,254,255,256}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-465}
+      STORE_ORDER_EMAIL: ${STORE_ORDER_EMAIL:-}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      DELIVERY_FEE_ORE: ${DELIVERY_FEE_ORE:-4900}
+      FREE_DELIVERY_MIN_ORE: ${FREE_DELIVERY_MIN_ORE:-49900}
+      MIN_DELIVERY_ORDER_ORE: ${MIN_DELIVERY_ORDER_ORE:-19900}
+      LOW_STOCK_THRESHOLD: ${LOW_STOCK_THRESHOLD:-10}
+    volumes:
+      - product_uploads:/app/public/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+
+  # Nightly database backup kept for 14 days (cheap insurance).
+  backup:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-ganapathy}
+    volumes:
+      - ./backups:/backups
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint: >
+      sh -c 'while true; do
+        pg_dump -h db -U ganapathy ganapathy | gzip > /backups/ganapathy-$$(date +%F).sql.gz;
+        find /backups -name "*.sql.gz" -mtime +14 -delete;
+        sleep 86400; done'
+
+volumes:
+  postgres_data:
+  product_uploads:

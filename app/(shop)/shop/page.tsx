@@ -1,0 +1,109 @@
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import type { Prisma } from '@prisma/client';
+import { db } from '@/lib/db';
+import { activeSalePrice, effectivePrice } from '@/lib/pricing';
+import ProductCard from '@/components/shop/ProductCard';
+import { getT } from '@/lib/i18n-server';
+import { categoryName } from '@/lib/i18n';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getT();
+  return { title: t('Shop') };
+}
+
+type SP = { q?: string; cat?: string; sort?: string; offers?: string; instock?: string };
+const SORTS: [string, string][] = [['', 'Popular'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low'], ['discount', 'Biggest discount'], ['name', 'A–Z']];
+
+export default async function Shop({ searchParams }: { searchParams: Promise<SP> }) {
+  const sp = await searchParams;
+  const { lang, t } = await getT();
+  const q = (sp.q || '').trim().slice(0, 60);
+  const now = new Date();
+  const where: Prisma.ProductWhereInput = { active: true };
+  if (sp.cat) where.category = { slug: sp.cat };
+  if (q)
+    where.OR = [
+      { name: { contains: q, mode: 'insensitive' } },
+      { description: { contains: q, mode: 'insensitive' } },
+      { category: { name: { contains: q, mode: 'insensitive' } } },
+    ];
+  const [categories, all] = await Promise.all([
+    db.category.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { _count: { select: { products: { where: { active: true } } } } } }),
+    db.product.findMany({
+      where,
+      include: { category: true },
+      orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }],
+    }),
+  ]);
+  let products = all;
+  if (sp.offers) products = products.filter((p) => activeSalePrice(p, now) != null);
+  if (sp.instock) products = products.filter((p) => p.stock > 0);
+  const price = (p: (typeof all)[number]) => effectivePrice(p, now);
+  const disc = (p: (typeof all)[number]) => p.price - price(p);
+  if (sp.sort === 'price-asc') products = [...products].sort((a, b) => price(a) - price(b));
+  if (sp.sort === 'price-desc') products = [...products].sort((a, b) => price(b) - price(a));
+  if (sp.sort === 'discount') products = [...products].sort((a, b) => disc(b) - disc(a));
+  if (sp.sort === 'name') products = [...products].sort((a, b) => a.name.localeCompare(b.name));
+  // Sold-out items always go last so customers see what they can buy first.
+  products = [...products].sort((a, b) => Number(b.stock > 0) - Number(a.stock > 0));
+
+  const current = categories.find((c) => c.slug === sp.cat);
+  const currentName = current ? categoryName(lang, current) : '';
+  const href = (patch: Partial<SP>) => {
+    const u = new URLSearchParams();
+    const merged = { ...sp, ...patch };
+    for (const [k, v] of Object.entries(merged)) if (v) u.set(k, String(v));
+    const s = u.toString();
+    return '/shop' + (s ? '?' + s : '');
+  };
+  const title = q ? t('Results for “{q}”', { q }) : sp.offers ? t('Offers & deals') : current ? currentName : t('All products');
+
+  return (
+    <main className="wrap shopPage">
+      <aside className="filters" aria-label={t('Filters')}>
+        <h3>{t('Categories')}</h3>
+        <Link href={href({ cat: undefined })} className={!sp.cat ? 'on' : ''}><span>🛒</span>{t('All products')}</Link>
+        {categories.filter((c) => c._count.products > 0).map((c) => (
+          <Link key={c.id} href={href({ cat: c.slug })} className={sp.cat === c.slug ? 'on' : ''}>
+            <span aria-hidden>{c.icon}</span>{categoryName(lang, c)}<small>{c._count.products}</small>
+          </Link>
+        ))}
+      </aside>
+      <section className="results">
+        <div className="resultsHead">
+          <div>
+            <nav className="crumbs"><Link href="/">{t('Home')}</Link> / <Link href="/shop">{t('Shop')}</Link>{current && <> / {currentName}</>}</nav>
+            <h1>{title}</h1>
+            <p className="muted">{t(products.length === 1 ? '{n} product' : '{n} products', { n: products.length })}</p>
+          </div>
+        </div>
+        <div className="chipRow catChipsMobile">
+          <Link href={href({ cat: undefined })} className={`chip${!sp.cat ? ' on' : ''}`}>{t('All')}</Link>
+          {categories.filter((c) => c._count.products > 0).map((c) => (
+            <Link key={c.id} href={href({ cat: c.slug })} className={`chip${sp.cat === c.slug ? ' on' : ''}`}>{c.icon} {categoryName(lang, c)}</Link>
+          ))}
+        </div>
+        <div className="chipRow">
+          <Link href={href({ offers: sp.offers ? undefined : '1' })} className={`chip${sp.offers ? ' on' : ''}`}>{t('🏷️ On offer')}</Link>
+          <Link href={href({ instock: sp.instock ? undefined : '1' })} className={`chip${sp.instock ? ' on' : ''}`}>{t('In stock')}</Link>
+          <span className="chipSep" />
+          {SORTS.map(([k, label]) => (
+            <Link key={k} href={href({ sort: k || undefined })} className={`chip chip-ghost${(sp.sort || '') === k ? ' on' : ''}`}>{t(label)}</Link>
+          ))}
+        </div>
+        {q && <p className="muted searchNote">{t('Showing matches for')} <b>{q}</b>. <Link href={href({ q: undefined })}>{t('Clear search')}</Link></p>}
+        {products.length ? (
+          <div className="pgrid">{products.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+        ) : (
+          <div className="emptyState">
+            <span aria-hidden>🔍</span>
+            <h2>{t('No products found')}</h2>
+            <p>{t('Try another word, or browse all categories. Can’t find something? Call us — we can often order it in.')}</p>
+            <Link className="btn" href="/shop">{t('Browse all products')}</Link>
+          </div>
+        )}
+      </section>
+    </main>
+  );
+}

@@ -1,0 +1,20 @@
+# dependencies and build output
+node_modules
+.next
+out
+build
+tsconfig.tsbuildinfo
+*.log
+.DS_Store
+
+# secrets: real env files stay on each machine
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# runtime data
+/backups/
+/uploads/
+/public/uploads/

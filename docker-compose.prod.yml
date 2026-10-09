@@ -1,0 +1,26 @@
+# Production overrides: run with
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+services:
+  web:
+    # Only reachable through Caddy, not directly from the internet.
+    ports: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      SITE_DOMAINS: ${SITE_DOMAINS:?set SITE_DOMAINS in .env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:

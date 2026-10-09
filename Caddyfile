@@ -1,0 +1,9 @@
+# Public front door: gets and renews HTTPS certificates automatically.
+# SITE_DOMAINS comes from .env, e.g. "ganapathysupermarket.com, www.ganapathysupermarket.com"
+{$SITE_DOMAINS} {
+	encode zstd gzip
+	request_body {
+		max_size 20MB
+	}
+	reverse_proxy web:3000
+}

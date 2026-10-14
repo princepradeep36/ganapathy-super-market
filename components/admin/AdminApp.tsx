@@ -11,6 +11,7 @@ import Categories from './Categories';
 import Coupons from './Coupons';
 import Collections from './Collections';
 import Requests from './Requests';
+import Banners from './Banners';
 
 export type Stats = {
   todayRevenue: number; todayOrders: number; pending: number; newOrders: number;
@@ -19,7 +20,7 @@ export type Stats = {
   top: { name: string; qty: number }[];
   lowStockThreshold: number;
 };
-type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; collections: any[]; requests: any[]; coupons: any[]; orders: any[]; storeName: string };
+type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; collections: any[]; banners: any[]; requests: any[]; coupons: any[]; orders: any[]; storeName: string };
 
 const NAV: [string, string, string][] = [
   ['overview', 'Overview', '▦'],
@@ -27,6 +28,7 @@ const NAV: [string, string, string][] = [
   ['products', 'Products', '📦'],
   ['categories', 'Categories', '🗂️'],
   ['collections', 'Collections', '🪔'],
+  ['banners', 'Banners', '🖼️'],
   ['coupons', 'Coupons', '🏷️'],
   ['requests', 'Requests', '🙋'],
 ];
@@ -71,6 +73,7 @@ export default function AdminApp(p: Props) {
         {p.tab === 'products' && <Products products={p.products} categories={p.categories} collections={p.collections} lowStock={p.stats.lowStockThreshold} />}
         {p.tab === 'categories' && <Categories categories={p.categories} />}
         {p.tab === 'collections' && <Collections collections={p.collections} />}
+        {p.tab === 'banners' && <Banners banners={p.banners} />}
         {p.tab === 'coupons' && <Coupons coupons={p.coupons} />}
         {p.tab === 'requests' && <Requests requests={p.requests} />}
       </main>

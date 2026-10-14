@@ -9,12 +9,12 @@ import HeroCarousel from '@/components/shop/HeroCarousel';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
 import { getT } from '@/lib/i18n-server';
 import { categoryName, type T } from '@/lib/i18n';
-import { categoryTree, liveCollection } from '@/lib/catalog';
+import { categoryTree, liveBanner, liveCollection } from '@/lib/catalog';
 
 export default async function Home() {
   const now = new Date();
   const { lang, t } = await getT();
-  const [products, cats, collections, coupon, sold] = await Promise.all([
+  const [products, cats, collections, banners, coupon, sold] = await Promise.all([
     db.product.findMany({ where: { active: true }, include: { category: true }, orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }] }),
     db.category.findMany({
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
@@ -25,6 +25,7 @@ export default async function Home() {
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
       include: { products: { where: { active: true, stock: { gt: 0 } }, include: { category: true }, orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }], take: 10 } },
     }),
+    db.banner.findMany({ where: liveBanner(now), orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] }),
     db.coupon.findFirst({
       where: { active: true, OR: [{ endsAt: null }, { endsAt: { gt: now } }], AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }] },
       orderBy: { createdAt: 'desc' },
@@ -51,13 +52,20 @@ export default async function Home() {
     <main>
       <section className="hero">
         <div className="wrap">
-          <HeroCarousel labels={[t('Welcome'), ...(slideOffers.length ? [t('Offers')] : []), ...(slideBest.length ? [t('Popular items')] : []), t('Join our WhatsApp group')]}>
+          <HeroCarousel labels={[t('Welcome'), ...banners.map((b) => b.title), ...(slideOffers.length ? [t('Offers')] : []), ...(slideBest.length ? [t('Popular items')] : []), t('Join our WhatsApp group')]}>
             <Link href="/shop" className="banner" aria-label={t('{name} — shop now', { name: store.name })}>
               <picture>
                 <source media="(max-width: 720px)" srcSet="/brand/banner-sm.jpg" />
                 <img src="/brand/banner.jpg" width={1774} height={887} alt={t('{name} — Freshness, Quality, For Your Family', { name: store.name })} fetchPriority="high" />
               </picture>
             </Link>
+            {banners.map((b) => {
+              const img = <img src={b.image} width={1800} height={900} alt={b.title} loading="lazy" />;
+              if (!b.link) return <div key={b.id} className="banner">{img}</div>;
+              return b.link.startsWith('/')
+                ? <Link key={b.id} href={b.link} className="banner">{img}</Link>
+                : <a key={b.id} href={b.link} className="banner" target="_blank" rel="noreferrer">{img}</a>;
+            })}
             {slideOffers.length > 0 && (
               <SlidePanel eyebrow={t('Limited time')} title={t('Today’s offers')} href="/shop?offers=1" cta={t('All offers')} items={slideOffers} now={now} t={t} />
             )}

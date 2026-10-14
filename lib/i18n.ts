@@ -183,7 +183,6 @@ const sv: Record<string, string> = {
   '💬 Join our WhatsApp group': '💬 Gå med i vår WhatsApp-grupp',
   'Get directions →': 'Vägbeskrivning →',
   'Organisationsnummer: {n}': 'Organisationsnummer: {n}',
-  'Textfree number: {n}': 'Textfree-nummer: {n}',
 
   // Shop / search page
   'Popular': 'Populärt',

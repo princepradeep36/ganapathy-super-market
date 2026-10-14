@@ -132,3 +132,16 @@ model OrderItem {
   order            Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product          Product @relation(fields: [productId], references: [id])
 }
+
+/** Extra home page banner slides, shown after the main banner in sortOrder. */
+model Banner {
+  id        String    @id @default(cuid())
+  image     String
+  title     String
+  link      String?
+  active    Boolean   @default(true)
+  startsAt  DateTime?
+  endsAt    DateTime?
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+}

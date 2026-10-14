@@ -130,7 +130,6 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
         <div className="wrap footerBase">
           <span>© {new Date().getFullYear()} {store.legalName}</span>
           <span>{t('Organisationsnummer: {n}', { n: store.orgNumber })}</span>
-          <span>{t('Textfree number: {n}', { n: store.textfreeNumber })}</span>
         </div>
       </footer>
       <script

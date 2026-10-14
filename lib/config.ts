@@ -17,7 +17,6 @@ export const store = {
   // Company details shown in the footer.
   legalName: process.env.COMPANY_NAME || 'Ganapathy Supermarket AB',
   orgNumber: process.env.COMPANY_ORG_NUMBER || '559131-5956',
-  textfreeNumber: process.env.COMPANY_TEXTFREE_NUMBER || 'SE559131595601',
   deliveryFee: int(process.env.DELIVERY_FEE_ORE, 4900),
   freeDeliveryMin: int(process.env.FREE_DELIVERY_MIN_ORE, 49900),
   minDeliveryOrder: int(process.env.MIN_DELIVERY_ORDER_ORE, 19900),

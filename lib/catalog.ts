@@ -17,3 +17,9 @@ export const liveCollection = (now: Date): Prisma.CollectionWhereInput => ({
   active: true,
   AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }],
 });
+
+/** Banners customers can see right now. */
+export const liveBanner = (now: Date): Prisma.BannerWhereInput => ({
+  active: true,
+  AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }],
+});

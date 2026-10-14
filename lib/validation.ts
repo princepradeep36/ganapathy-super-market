@@ -77,3 +77,20 @@ export function requestInput(raw: unknown) {
   if (!d.phone && !d.email) throw new Error('Add a phone number or e-mail so we can reply');
   return d;
 }
+
+const Banner = z.object({
+  image: z.string().trim().regex(/^\/uploads\/[\w.-]+$/, 'Upload a banner image'),
+  title: z.string().trim().min(2, 'Add a short description of the banner').max(120),
+  // Where a click goes: a page in the shop (/shop?col=diwali-2026) or a full https:// address.
+  link: z.union([z.literal(''), z.string().trim().max(300).regex(/^(\/(?!\/)|https:\/\/)/, 'Link must start with / or https://')]).optional().transform((v) => v || null),
+  active: z.boolean().default(true),
+  startsAt: optDate.optional(),
+  endsAt: optDate.optional(),
+  sortOrder: z.coerce.number().int().default(0),
+});
+
+export function bannerInput(raw: unknown) {
+  const d = Banner.parse(raw);
+  if (d.startsAt && d.endsAt && d.endsAt <= d.startsAt) throw new Error('End date must be after the start');
+  return d;
+}

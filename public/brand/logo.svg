@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="TamilKadai">
+  <!-- TamilKadai mark: a little Tamil street shop (petti kadai) with a striped
+       awning, a mango-leaf thoranam and a kolam on the counter. -->
+  <defs>
+    <clipPath id="badge"><circle cx="256" cy="256" r="232"/></clipPath>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f6b45"/>
+      <stop offset="1" stop-color="#0a4a30"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c8742f"/>
+      <stop offset="1" stop-color="#9a5320"/>
+    </linearGradient>
+    <path id="leaf" d="M0 0 C 9 10 10 30 0 44 C -10 30 -9 10 0 0 Z"/>
+  </defs>
+
+  <!-- badge -->
+  <circle cx="256" cy="256" r="248" fill="#d4a234"/>
+  <circle cx="256" cy="256" r="236" fill="#fbf3dc"/>
+  <circle cx="256" cy="256" r="226" fill="url(#sky)"/>
+
+  <g clip-path="url(#badge)">
+
+    <!-- posts -->
+    <rect x="128" y="168" width="18" height="220" rx="6" fill="#7a3e14"/>
+    <rect x="366" y="168" width="18" height="220" rx="6" fill="#7a3e14"/>
+
+    <!-- shelf with jars -->
+    <rect x="146" y="214" width="220" height="12" rx="4" fill="#7a3e14"/>
+    <rect x="166" y="184" width="30" height="30" rx="6" fill="#f2b705"/>
+    <rect x="166" y="180" width="30" height="9" rx="3" fill="#c0392b"/>
+    <rect x="206" y="190" width="26" height="24" rx="6" fill="#e9e1c9"/>
+    <rect x="206" y="186" width="26" height="8" rx="3" fill="#0f6b45"/>
+    <rect x="280" y="186" width="28" height="28" rx="6" fill="#d35400"/>
+    <rect x="280" y="182" width="28" height="8" rx="3" fill="#7a3e14"/>
+    <rect x="318" y="192" width="28" height="22" rx="6" fill="#f6d77a"/>
+    <rect x="318" y="188" width="28" height="7" rx="3" fill="#c0392b"/>
+
+    <!-- produce on the counter -->
+    <ellipse cx="190" cy="300" rx="42" ry="14" fill="#7a3e14"/>
+    <circle cx="176" cy="284" r="17" fill="#e0402b"/>
+    <circle cx="203" cy="286" r="15" fill="#e0402b"/>
+    <circle cx="190" cy="270" r="14" fill="#e85a3c"/>
+    <path d="M176 268 l4 -8 M203 272 l3 -7" stroke="#1d7a3a" stroke-width="5" stroke-linecap="round"/>
+    <!-- banana bunch -->
+    <path d="M236 298 C 236 262 262 244 292 252 C 270 258 254 276 252 298 Z" fill="#f4c430"/>
+    <path d="M250 298 C 252 266 276 252 306 260 C 284 266 270 280 268 298 Z" fill="#f7d14a"/>
+    <path d="M292 250 l10 -6" stroke="#4d7a1f" stroke-width="7" stroke-linecap="round"/>
+    <!-- chilli pile -->
+    <ellipse cx="330" cy="300" rx="40" ry="13" fill="#7a3e14"/>
+    <path d="M300 292 c 12 -26 30 -30 52 -22" stroke="#c0392b" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M308 296 c 14 -16 30 -18 46 -10" stroke="#e0402b" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M352 270 l8 -6 M354 286 l8 -4" stroke="#1d7a3a" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- counter with kolam -->
+    <rect x="112" y="300" width="288" height="112" rx="10" fill="url(#wood)"/>
+    <rect x="112" y="300" width="288" height="14" rx="6" fill="#7a3e14"/>
+    <rect x="140" y="326" width="232" height="72" rx="10" fill="#fbf3dc"/>
+    <g fill="none" stroke="#c0392b" stroke-width="4" stroke-linecap="round">
+      <path d="M256 334 l26 28 l-26 28 l-26 -28 Z"/>
+      <path d="M200 362 c 12 -18 24 -18 30 0 c -6 18 -18 18 -30 0 Z"/>
+      <path d="M312 362 c -12 -18 -24 -18 -30 0 c 6 18 18 18 30 0 Z"/>
+    </g>
+    <g fill="#0f6b45">
+      <circle cx="256" cy="362" r="5"/><circle cx="170" cy="362" r="5"/><circle cx="342" cy="362" r="5"/>
+      <circle cx="226" cy="340" r="3.5"/><circle cx="286" cy="340" r="3.5"/><circle cx="226" cy="384" r="3.5"/><circle cx="286" cy="384" r="3.5"/>
+    </g>
+  </g>
+
+  <!-- striped awning with scalloped edge -->
+  <g>
+    <path d="M100 118 Q 256 70 412 118 L 424 170 L 88 170 Z" fill="#fbf3dc"/>
+    <g fill="#f2b705">
+      <path d="M100 118 Q 120 112 142 106 L 140 170 L 88 170 Z"/>
+      <path d="M184 95 Q 205 90 228 87 L 228 170 L 184 170 Z"/>
+      <path d="M270 86 Q 292 88 314 92 L 314 170 L 270 170 Z"/>
+      <path d="M356 102 Q 384 109 412 118 L 424 170 L 358 170 Z"/>
+    </g>
+    <path d="M88 170 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 q 21 26 42 0 Z" fill="#c0392b"/>
+    <path d="M100 118 Q 256 70 412 118" fill="none" stroke="#c0392b" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- mango-leaf thoranam -->
+  <path d="M96 172 Q 256 236 416 172" fill="none" stroke="#7a3e14" stroke-width="3"/>
+  <g fill="#2e8b3a">
+    <use href="#leaf" transform="translate(126 186) rotate(-8)"/>
+    <use href="#leaf" transform="translate(164 199) rotate(-5)" fill="#3fa34d"/>
+    <use href="#leaf" transform="translate(204 208) rotate(-2)"/>
+    <use href="#leaf" transform="translate(308 208) rotate(2)"/>
+    <use href="#leaf" transform="translate(348 199) rotate(5)" fill="#3fa34d"/>
+    <use href="#leaf" transform="translate(386 186) rotate(8)"/>
+  </g>
+  <!-- marigold in the middle of the thoranam -->
+  <g transform="translate(256 214)">
+    <circle r="16" fill="#f39c12"/>
+    <circle r="10" fill="#f6b93b"/>
+    <circle r="4" fill="#d35400"/>
+  </g>
+</svg>

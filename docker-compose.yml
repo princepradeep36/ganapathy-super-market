@@ -26,7 +26,7 @@ services:
       SESSION_SECRET: ${SESSION_SECRET:-development-secret-change-before-production}
       INSECURE_COOKIES: ${INSECURE_COOKIES:-1}
       UPLOAD_DIR: /app/public/uploads
-      NEXT_PUBLIC_STORE_NAME: ${NEXT_PUBLIC_STORE_NAME:-Ganapathy Super Market}
+      NEXT_PUBLIC_STORE_NAME: ${NEXT_PUBLIC_STORE_NAME:-TamilKadai}
       STORE_PHONE: ${STORE_PHONE:-}
       STORE_EMAIL: ${STORE_EMAIL:-}
       STORE_ADDRESS: ${STORE_ADDRESS:-}

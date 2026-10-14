@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Ganapathy Super Market — design system
+   TamilKadai — design system
    Plain CSS, no framework: small, fast and easy to tweak.
    ========================================================================== */
 :root {
@@ -650,7 +650,7 @@ textarea { resize: vertical; min-height: 80px; }
 }
 
 /* ==========================================================================
-   Ganapathy theme — cream, temple green & gold (matches logo and banner)
+   TamilKadai theme — cream, temple green & gold, with kumkum red (matches logo and banner)
    ========================================================================== */
 :root {
   --brand: #0e5a2c;
@@ -961,3 +961,10 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 .bannerPreview { aspect-ratio: 2 / 1; border-radius: 12px; overflow: hidden; background: var(--cream); border: 1px dashed var(--line); display: grid; place-items: center; color: var(--muted); margin-bottom: 10px; }
 .bannerPreview img { width: 100%; height: 100%; object-fit: cover; }
 .modal .upload { margin-bottom: 14px; }
+
+/* ---------- TamilKadai wordmark ---------- */
+.logoWord { display: block; }
+.logoWord em { font-style: normal; color: #c0392b; }
+.logoLight .logoWord em { color: var(--gold); }
+.logoText small.logoTa { font-family: 'Catamaran', var(--font); text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 800; margin-top: 2px; }
+@media (max-width: 720px) { .logoText small.logoTa { font-size: 13px; } }

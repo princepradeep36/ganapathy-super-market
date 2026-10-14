@@ -1,4 +1,4 @@
-# Ganapathy Super Market — web store
+# TamilKadai — web store
 
 Next.js 15 + PostgreSQL + Prisma, packaged with Docker. One small server runs the shop, the admin and the database — no paid SaaS needed.
 

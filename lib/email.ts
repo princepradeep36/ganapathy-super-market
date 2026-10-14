@@ -75,7 +75,7 @@ function layout(title: string, body: string) {
 <tr><td style="background:#07432a;padding:20px 24px">
   <table role="presentation" cellpadding="0" cellspacing="0"><tr>
     <td><img src="${c.siteUrl}/brand/logo.png" width="52" height="52" alt="" style="display:block;border-radius:50%"></td>
-    <td style="padding-left:12px;color:#fff;font-size:20px;font-weight:800;line-height:1.1">Ganapathy<br><span style="font-size:11px;letter-spacing:3px;color:#ffb020">SUPER MARKET</span></td>
+    <td style="padding-left:12px;color:#fff;font-size:20px;font-weight:800;line-height:1.1">Tamil<span style="color:#ffb020">Kadai</span><br><span style="font-size:12px;color:#ffb020">தமிழ் கடை</span></td>
   </tr></table>
 </td></tr>
 <tr><td style="padding:26px 24px 8px"><h1 style="margin:0 0 6px;font-size:22px;color:#07432a">${title}</h1>${body}</td></tr>

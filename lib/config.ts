@@ -6,7 +6,7 @@ const int = (v: string | undefined, fallback: number) => {
 };
 
 export const store = {
-  name: process.env.NEXT_PUBLIC_STORE_NAME || 'Ganapathy Super Market',
+  name: process.env.NEXT_PUBLIC_STORE_NAME || 'TamilKadai',
   phone: process.env.STORE_PHONE || '073-577 35 60',
   email: process.env.STORE_EMAIL || '',
   address: process.env.STORE_ADDRESS || 'Gasverksgatan 13, 252 18 Helsingborg',
@@ -33,7 +33,7 @@ export const telHref = () => {
   return 'tel:' + (d.startsWith('+') ? d : d.startsWith('0') ? '+46' + d.slice(1) : d);
 };
 /** Google Maps embed for the store address (no API key needed). */
-export const mapEmbed = () => 'https://www.google.com/maps?output=embed&q=' + encodeURIComponent(store.name + ', ' + store.address);
+export const mapEmbed = () => 'https://www.google.com/maps?output=embed&q=' + encodeURIComponent(store.address);
 
 /** The subset that is safe and useful to send to the browser. */
 export const publicStore = () => ({

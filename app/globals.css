@@ -964,7 +964,6 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 
 /* ---------- TamilKadai wordmark ---------- */
 .logoWord { display: block; }
-.logoWord em { font-style: normal; color: #c0392b; }
-.logoLight .logoWord em { color: var(--gold); }
+.logoWord em { font-style: normal; }
 .logoText small.logoTa { font-family: 'Catamaran', var(--font); text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 800; margin-top: 2px; }
 @media (max-width: 720px) { .logoText small.logoTa { font-size: 13px; } }

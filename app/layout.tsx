@@ -5,7 +5,7 @@ import { getLang } from '@/lib/i18n-server';
 
 export const metadata: Metadata = {
   title: { default: `${store.name} · Indian groceries in Sweden`, template: `%s · ${store.name}` },
-  icons: { icon: [{ url: '/brand/logo.svg', type: 'image/svg+xml' }, { url: '/brand/logo.png' }], apple: '/brand/apple-icon.png' },
+  icons: { icon: '/brand/logo.png', apple: '/brand/apple-icon.png' },
   openGraph: { images: ['/brand/banner.jpg'] },
   description: 'Authentic Indian groceries — rice, dals, spices, fresh vegetables and snacks. Order online for store pickup or home delivery.',
 };

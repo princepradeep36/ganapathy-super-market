@@ -1,9 +1,9 @@
 /**
- * Brand logo: the TamilKadai shop-stall badge (public/brand/logo.svg) plus the
- * wordmark. logo.png and apple-icon.png are the same badge as PNG icons.
+ * Brand logo: the emblem image (public/brand/logo.png) plus the TamilKadai
+ * wordmark.
  */
 export function LogoMark({ size = 44, className = '' }: { size?: number; className?: string }) {
-  return <img className={`logoImg ${className}`} src="/brand/logo.svg" width={size} height={size} alt="TamilKadai logo" />;
+  return <img className={`logoImg ${className}`} src="/brand/logo.png" width={size} height={size} alt="TamilKadai logo" />;
 }
 
 export default function Logo({ light = false, size = 44 }: { light?: boolean; size?: number }) {

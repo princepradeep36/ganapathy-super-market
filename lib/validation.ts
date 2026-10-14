@@ -52,8 +52,8 @@ const Collection = z.object({
   icon: z.string().trim().max(8).default('✨').transform((v) => v || '✨'),
   description: z.string().trim().max(300).default(''),
   active: z.boolean().default(true),
-  startsAt: optDate,
-  endsAt: optDate,
+  startsAt: optDate.optional(),
+  endsAt: optDate.optional(),
   sortOrder: z.coerce.number().int().default(0),
 });
 
@@ -69,7 +69,7 @@ const Request = z.object({
   details: optText(500),
   name: z.string().trim().min(2, 'Please enter your name').max(80),
   phone: optText(30),
-  email: z.union([z.literal(''), z.undefined(), z.string().trim().email('Please enter a valid e-mail')]).transform((v) => v || null),
+  email: z.union([z.literal(''), z.string().trim().email('Please enter a valid e-mail')]).optional().transform((v) => v || null),
 });
 
 export function requestInput(raw: unknown) {

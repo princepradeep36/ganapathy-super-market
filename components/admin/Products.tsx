@@ -2,12 +2,16 @@
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import { activeSalePrice } from '@/lib/pricing';
+import { categoryTree } from '@/lib/catalog';
 import ProductImage from '@/components/shop/ProductImage';
 import { Modal, api, fromInputDate, kr, toInputDate, toast } from './ui';
 
+/** "Rice › 5 kg" for sub-categories, plain name otherwise. */
+const catLabel = (c: any) => (c?.parent ? `${c.parent.name} › ${c.name}` : c?.name);
+
 const EMOJI = ['🍚', '🌾', '🫘', '🌶️', '🧄', '🧅', '🥬', '🍆', '🥭', '🍌', '🥥', '🧀', '🥛', '🫓', '🥨', '🍪', '☕', '🍵', '🫙', '🧂', '🛢️', '🍜', '🧊', '🛒'];
 
-export default function Products({ products, categories, lowStock }: { products: any[]; categories: any[]; lowStock: number }) {
+export default function Products({ products, categories, collections, lowStock }: { products: any[]; categories: any[]; collections: any[]; lowStock: number }) {
   const router = useRouter();
   const [q, setQ] = useState('');
   const [cat, setCat] = useState('');
@@ -19,7 +23,7 @@ export default function Products({ products, categories, lowStock }: { products:
     const n = q.trim().toLowerCase();
     return products.filter((p) =>
       (!n || p.name.toLowerCase().includes(n)) &&
-      (!cat || p.categoryId === cat) &&
+      (!cat || p.categoryId === cat || p.category?.parentId === cat) &&
       (view === 'all' || (view === 'active' && p.active) || (view === 'hidden' && !p.active) ||
         (view === 'low' && p.active && p.stock <= lowStock) || (view === 'offer' && p.active && activeSalePrice({ ...p, saleStart: p.saleStart && new Date(p.saleStart), saleEnd: p.saleEnd && new Date(p.saleEnd) }, now) != null)),
     );
@@ -46,7 +50,7 @@ export default function Products({ products, categories, lowStock }: { products:
         <div className="segs">{VIEWS.map(([k, l]) => <button key={k} className={view === k ? 'on' : ''} onClick={() => setView(k)}>{l}</button>)}</div>
         <select className="selectIn" value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Category">
           <option value="">All categories</option>
-          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {categoryTree(categories).map((c) => [<option key={c.id} value={c.id}>{c.name}</option>, ...c.children.map((s: any) => <option key={s.id} value={s.id}>{'\u00a0\u00a0› '}{s.name}</option>)])}
         </select>
         <input className="searchIn" type="search" placeholder="Search products…" value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
@@ -66,7 +70,7 @@ export default function Products({ products, categories, lowStock }: { products:
                           <span><b>{p.name}</b><small>{p.unit || '—'}{p.featured && ' · ⭐ Featured'}</small></span>
                         </div>
                       </td>
-                      <td>{p.category?.name}</td>
+                      <td>{catLabel(p.category)}</td>
                       <td>
                         {sale ? <><b className="okText">{kr(sale)}</b><small><s>{kr(p.price)}</s> offer</small></> : <b>{kr(p.price)}</b>}
                         {!sale && p.salePrice && <small className="muted">offer scheduled/ended</small>}
@@ -97,12 +101,12 @@ export default function Products({ products, categories, lowStock }: { products:
           </div>
         ) : <div className="emptyState small"><span aria-hidden>📦</span><p>No products match.</p></div>}
       </div>
-      {edit && <ProductForm product={edit} categories={categories} onClose={() => setEdit(null)} onSaved={() => { setEdit(null); router.refresh(); }} />}
+      {edit && <ProductForm product={edit} categories={categories} collections={collections} onClose={() => setEdit(null)} onSaved={() => { setEdit(null); router.refresh(); }} />}
     </>
   );
 }
 
-function ProductForm({ product, categories, onClose, onSaved }: { product: any; categories: any[]; onClose: () => void; onSaved: () => void }) {
+function ProductForm({ product, categories, collections, onClose, onSaved }: { product: any; categories: any[]; collections: any[]; onClose: () => void; onSaved: () => void }) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [image, setImage] = useState<string>(product.image || '🛒');
@@ -127,6 +131,7 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: any; 
         price: f.get('price'), stock: f.get('stock'), image: img,
         salePrice: hasOffer ? f.get('salePrice') : '', saleStart: hasOffer ? fromInputDate(f.get('saleStart')) : '', saleEnd: hasOffer ? fromInputDate(f.get('saleEnd')) : '',
         active: f.get('active') === 'on', featured: f.get('featured') === 'on',
+        collectionIds: f.getAll('collectionIds'),
       };
       await api(product.id ? '/api/admin/products/' + product.id : '/api/admin/products', { method: product.id ? 'PUT' : 'POST', json: body });
       toast(product.id ? 'Product saved' : 'Product added');
@@ -156,7 +161,12 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: any; 
           <label className="full">Product name<input name="name" defaultValue={product.name} required placeholder="e.g. Ponni Boiled Rice" /></label>
           <label>Category
             <select name="categoryId" defaultValue={product.categoryId || categories[0]?.id} required>
-              {categories.map((c) => <option value={c.id} key={c.id}>{c.icon} {c.name}</option>)}
+              {categoryTree(categories).map((c) => c.children.length ? (
+                <optgroup key={c.id} label={`${c.icon} ${c.name}`}>
+                  <option value={c.id}>{c.name} (general)</option>
+                  {c.children.map((s: any) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                </optgroup>
+              ) : <option value={c.id} key={c.id}>{c.icon} {c.name}</option>)}
             </select>
           </label>
           <label>Pack size / unit<input name="unit" defaultValue={product.unit || ''} placeholder="5 kg · 500 g · 1 bunch" /></label>
@@ -171,6 +181,16 @@ function ProductForm({ product, categories, onClose, onSaved }: { product: any; 
               <label>Offer starts <span className="opt">(optional)</span><input name="saleStart" type="datetime-local" defaultValue={toInputDate(product.saleStart)} /></label>
               <label>Offer ends <span className="opt">(optional)</span><input name="saleEnd" type="datetime-local" defaultValue={toInputDate(product.saleEnd)} /></label>
             </>
+          )}
+          {collections.length > 0 && (
+            <fieldset className="full collPick">
+              <legend>Collections <span className="opt">(optional, a product can be in several)</span></legend>
+              {collections.map((c) => (
+                <label className="check" key={c.id}>
+                  <input type="checkbox" name="collectionIds" value={c.id} defaultChecked={product.collections?.some((x: any) => x.id === c.id)} /> {c.icon} {c.name}
+                </label>
+              ))}
+            </fieldset>
           )}
           <label className="check"><input name="active" type="checkbox" defaultChecked={product.active !== false} /> Visible in shop</label>
           <label className="check"><input name="featured" type="checkbox" defaultChecked={!!product.featured} /> ⭐ Feature on homepage</label>

@@ -920,3 +920,33 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
   .slideWaText { font-size: 12.5px; }
   .slideWa .slidePanelHead { gap: 8px; }
 }
+
+/* ---------- Sub-categories, collections, product requests ---------- */
+.subFilters { margin: 2px 0 6px 34px; border-left: 2px solid var(--line); padding-left: 6px; }
+.filters .subFilters a { padding: 6px 10px; font-size: 13px; font-weight: 600; }
+.subChips { margin-top: -4px; }
+.collIntro { color: var(--ink-2); margin-top: 4px; }
+.collSection .sectionHead p { margin-top: 4px; font-size: 14px; }
+.requestNudge { text-align: center; color: var(--muted); margin-top: 28px; font-size: 14px; }
+.requestNudge a { color: var(--brand); font-weight: 700; }
+.emptyBtns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.requestForm { margin-top: 18px; }
+.requestForm textarea { resize: vertical; }
+.requestDone { margin-top: 18px; text-align: center; }
+.requestDone > span { font-size: 40px; }
+.requestDone h2 { justify-content: center; margin: 8px 0; }
+.requestDone p { color: var(--muted); margin-bottom: 18px; }
+.catAdmin:has(.subCats) { flex-wrap: wrap; }
+.subCats { flex-basis: 100%; list-style: none; margin: 6px 0 0; padding: 8px 0 0; border-top: 1px dashed var(--line); display: grid; gap: 4px; }
+.subCats li { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 14px; padding-left: 8px; }
+.catAdmin .subCats li small { display: inline; color: var(--muted); }
+.collPick { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.collPick legend { font-size: 13px; font-weight: 700; color: var(--ink-2); padding: 0 6px; }
+.reqDetails { white-space: pre-wrap; max-width: 420px; }
+.reqActions { white-space: nowrap; }
+.reqActions .linkBtn + .linkBtn { margin-left: 12px; }
+.btn-ghost.danger { color: var(--err); margin-right: auto; }
+@media (max-width: 900px) {
+  .abottom { overflow-x: auto; }
+  .abottom a { min-width: 58px; }
+}

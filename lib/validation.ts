@@ -17,6 +17,7 @@ const Product = z.object({
   image: z.string().trim().max(300).default('🛒').transform((v) => v || '🛒'),
   active: z.boolean().default(true),
   featured: z.boolean().default(false),
+  collectionIds: z.array(z.string()).max(50).default([]),
 });
 
 export function productInput(raw: unknown) {
@@ -44,4 +45,35 @@ export function couponInput(raw: unknown) {
   const d = Coupon.parse(raw);
   if (d.type === 'PERCENT' && d.value > 90) throw new Error('Percentage discount cannot be above 90%');
   return { ...d, value: d.type === 'FIXED' ? Math.round(d.value * 100) : Math.round(d.value) };
+}
+
+const Collection = z.object({
+  name: z.string().trim().min(2, 'Collection name is required').max(60),
+  icon: z.string().trim().max(8).default('✨').transform((v) => v || '✨'),
+  description: z.string().trim().max(300).default(''),
+  active: z.boolean().default(true),
+  startsAt: optDate,
+  endsAt: optDate,
+  sortOrder: z.coerce.number().int().default(0),
+});
+
+export function collectionInput(raw: unknown) {
+  const d = Collection.parse(raw);
+  if (d.startsAt && d.endsAt && d.endsAt <= d.startsAt) throw new Error('End date must be after the start');
+  return d;
+}
+
+const optText = (max: number) => z.string().trim().max(max).optional().transform((v) => v || null);
+const Request = z.object({
+  productName: z.string().trim().min(2, 'Tell us which product you are looking for').max(120),
+  details: optText(500),
+  name: z.string().trim().min(2, 'Please enter your name').max(80),
+  phone: optText(30),
+  email: z.union([z.literal(''), z.undefined(), z.string().trim().email('Please enter a valid e-mail')]).transform((v) => v || null),
+});
+
+export function requestInput(raw: unknown) {
+  const d = Request.parse(raw);
+  if (!d.phone && !d.email) throw new Error('Add a phone number or e-mail so we can reply');
+  return d;
 }

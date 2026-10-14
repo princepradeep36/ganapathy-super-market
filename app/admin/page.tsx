@@ -8,7 +8,7 @@ import AdminApp, { type Stats } from '@/components/admin/AdminApp';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { title: 'Store admin', robots: { index: false } };
 
-const TABS = ['overview', 'orders', 'products', 'categories', 'coupons'] as const;
+const TABS = ['overview', 'orders', 'products', 'categories', 'collections', 'coupons', 'requests'] as const;
 type Tab = (typeof TABS)[number];
 
 export default async function Admin({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
@@ -21,9 +21,11 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
   const since30 = new Date(now.getTime() - 30 * 864e5);
   const since14 = new Date(startOfDay.getTime() - 13 * 864e5);
 
-  const [products, categories, coupons, orders, recent30, top] = await Promise.all([
-    db.product.findMany({ include: { category: true }, orderBy: [{ active: 'desc' }, { name: 'asc' }] }),
-    db.category.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { _count: { select: { products: true } } } }),
+  const [products, categories, collections, requests, coupons, orders, recent30, top] = await Promise.all([
+    db.product.findMany({ include: { category: { include: { parent: true } }, collections: { select: { id: true } } }, orderBy: [{ active: 'desc' }, { name: 'asc' }] }),
+    db.category.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { _count: { select: { products: true, children: true } } } }),
+    db.collection.findMany({ orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }], include: { _count: { select: { products: true } } } }),
+    db.productRequest.findMany({ orderBy: [{ status: 'asc' }, { createdAt: 'desc' }], take: 300 }),
     db.coupon.findMany({ orderBy: [{ active: 'desc' }, { createdAt: 'desc' }] }),
     db.order.findMany({ include: { items: true }, orderBy: { createdAt: 'desc' }, take: 300 }),
     db.order.findMany({ where: { createdAt: { gte: since30 }, status: { not: 'CANCELLED' } }, select: { total: true, createdAt: true, orderDiscountTotal: true, itemDiscountTotal: true } }),
@@ -63,5 +65,5 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
     lowStockThreshold: store.lowStock,
   };
 
-  return <AdminApp tab={tab} stats={stats} products={products} categories={categories} coupons={coupons} orders={orders} storeName={store.name} />;
+  return <AdminApp tab={tab} stats={stats} products={products} categories={categories} collections={collections} requests={requests} coupons={coupons} orders={orders} storeName={store.name} />;
 }

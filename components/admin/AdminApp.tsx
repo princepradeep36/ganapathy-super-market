@@ -9,6 +9,8 @@ import Orders from './Orders';
 import Products from './Products';
 import Categories from './Categories';
 import Coupons from './Coupons';
+import Collections from './Collections';
+import Requests from './Requests';
 
 export type Stats = {
   todayRevenue: number; todayOrders: number; pending: number; newOrders: number;
@@ -17,14 +19,16 @@ export type Stats = {
   top: { name: string; qty: number }[];
   lowStockThreshold: number;
 };
-type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; coupons: any[]; orders: any[]; storeName: string };
+type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; collections: any[]; requests: any[]; coupons: any[]; orders: any[]; storeName: string };
 
 const NAV: [string, string, string][] = [
   ['overview', 'Overview', '▦'],
   ['orders', 'Orders', '🧾'],
   ['products', 'Products', '📦'],
   ['categories', 'Categories', '🗂️'],
+  ['collections', 'Collections', '🪔'],
   ['coupons', 'Coupons', '🏷️'],
+  ['requests', 'Requests', '🙋'],
 ];
 
 export default function AdminApp(p: Props) {
@@ -41,7 +45,8 @@ export default function AdminApp(p: Props) {
     await api('/api/admin/logout', { method: 'POST' }).catch(() => {});
     location.href = '/admin/login';
   }
-  const badge = (k: string) => (k === 'orders' && p.stats.newOrders ? p.stats.newOrders : k === 'products' && lowStock ? lowStock : 0);
+  const newRequests = p.requests.filter((r) => r.status === 'NEW').length;
+  const badge = (k: string) => (k === 'orders' && p.stats.newOrders ? p.stats.newOrders : k === 'products' && lowStock ? lowStock : k === 'requests' ? newRequests : 0);
 
   return (
     <div className="admin">
@@ -63,9 +68,11 @@ export default function AdminApp(p: Props) {
       <main className="amain">
         {p.tab === 'overview' && <Overview stats={p.stats} orders={p.orders} products={p.products} />}
         {p.tab === 'orders' && <Orders orders={p.orders} />}
-        {p.tab === 'products' && <Products products={p.products} categories={p.categories} lowStock={p.stats.lowStockThreshold} />}
+        {p.tab === 'products' && <Products products={p.products} categories={p.categories} collections={p.collections} lowStock={p.stats.lowStockThreshold} />}
         {p.tab === 'categories' && <Categories categories={p.categories} />}
+        {p.tab === 'collections' && <Collections collections={p.collections} />}
         {p.tab === 'coupons' && <Coupons coupons={p.coupons} />}
+        {p.tab === 'requests' && <Requests requests={p.requests} />}
       </main>
       <nav className="abottom" aria-label="Admin">
         {NAV.map(([k, label, icon]) => (

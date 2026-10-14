@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { adminError, requireAdmin, slugify } from '@/lib/admin';
+import { parentFor } from './parent';
 
 export async function GET() {
   try {
@@ -17,7 +18,8 @@ export async function POST(r: Request) {
     const name = String(d.name || '').trim();
     if (!name) throw new Error('Category name is required');
     const count = await db.category.count();
-    return Response.json(await db.category.create({ data: { name, slug: slugify(name), icon: String(d.icon || '🛒').slice(0, 8), sortOrder: Number(d.sortOrder) || count + 1 } }));
+    const parentId = await parentFor(null, d.parentId);
+    return Response.json(await db.category.create({ data: { name, slug: slugify(name), icon: String(d.icon || '🛒').slice(0, 8), sortOrder: Number(d.sortOrder) || count + 1, parentId } }));
   } catch (e) {
     return adminError(e);
   }

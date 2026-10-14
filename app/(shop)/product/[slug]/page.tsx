@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: P): Promise<Metadata> {
 
 export default async function ProductPage({ params }: P) {
   const { slug } = await params;
-  const p = await db.product.findUnique({ where: { slug }, include: { category: true } });
+  const p = await db.product.findUnique({ where: { slug }, include: { category: { include: { parent: true } } } });
   if (!p || !p.active) notFound();
   const { lang, t } = await getT();
   const cat = categoryName(lang, p.category);
@@ -34,7 +34,11 @@ export default async function ProductPage({ params }: P) {
   });
   return (
     <main className="wrap section">
-      <nav className="crumbs"><Link href="/">{t('Home')}</Link> / <Link href={`/shop?cat=${p.category.slug}`}>{cat}</Link> / {p.name}</nav>
+      <nav className="crumbs">
+        <Link href="/">{t('Home')}</Link> /{' '}
+        {p.category.parent && <><Link href={`/shop?cat=${p.category.parent.slug}`}>{categoryName(lang, p.category.parent)}</Link> / </>}
+        <Link href={`/shop?cat=${p.category.slug}`}>{cat}</Link> / {p.name}
+      </nav>
       <div className="pdp">
         <div className="pdpPic">
           {sale && <span className="badge badge-offer">{t('{n}% OFF', { n: discountPercent(p.price, sale) })}</span>}

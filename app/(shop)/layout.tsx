@@ -8,14 +8,21 @@ import { LangProvider, LangSwitch } from '@/components/shop/I18n';
 import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
+import { liveCollection } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const categories = await db.category.findMany({
-    where: { products: { some: { active: true } } },
-    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
-  });
+  const [categories, collections] = await Promise.all([
+    db.category.findMany({
+      where: { parentId: null, OR: [{ products: { some: { active: true } } }, { children: { some: { products: { some: { active: true } } } } }] },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    }),
+    db.collection.findMany({
+      where: { ...liveCollection(new Date()), products: { some: { active: true } } },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+    }),
+  ]);
   const cfg = publicStore();
   const { lang, t } = await getT();
   return (
@@ -45,6 +52,9 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <div className="wrap catbarIn">
             <Link href="/shop">{t('All')}</Link>
             <Link href="/shop?offers=1" className="hot">{t('🏷️ Offers')}</Link>
+            {collections.map((c) => (
+              <Link key={c.id} href={`/shop?col=${c.slug}`} className="hot">{c.icon} {c.name}</Link>
+            ))}
             {categories.map((c) => (
               <Link key={c.id} href={`/shop?cat=${c.slug}`}>{categoryName(lang, c)}</Link>
             ))}
@@ -103,6 +113,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <div>
             <h4>{t('Help')}</h4>
             <Link href="/orders">{t('Track my order')}</Link>
+            <Link href="/request">{t('Request a product')}</Link>
             <span>{t('Pickup is always free')}</span>
             <span>{t('Pay at pickup / on delivery')}{cfg.swish ? ' · Swish' : ''}</span>
           </div>

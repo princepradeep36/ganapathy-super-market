@@ -8,7 +8,8 @@ export async function PUT(r: Request, { params }: Ctx) {
   try {
     await requireAdmin();
     const { id } = await params;
-    return Response.json(await db.product.update({ where: { id }, data: productInput(await r.json()) }));
+    const { collectionIds, ...data } = productInput(await r.json());
+    return Response.json(await db.product.update({ where: { id }, data: { ...data, collections: { set: collectionIds.map((id) => ({ id })) } } }));
   } catch (e) {
     return adminError(e);
   }

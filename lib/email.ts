@@ -170,3 +170,15 @@ export async function sendStatusUpdate(o: MailOrder) {
   const m = statusUpdate(o);
   await send(o.email, m.subject, m.html, m.text, mailConfig().storeInbox);
 }
+
+/** Tells the store a customer asked for a product it doesn't stock. */
+export async function sendProductRequest(r: { productName: string; details: string | null; name: string; phone: string | null; email: string | null }) {
+  const c = mailConfig();
+  const contact = [r.phone && `<a href="tel:${esc(r.phone)}">${esc(r.phone)}</a>`, r.email && `<a href="mailto:${esc(r.email)}">${esc(r.email)}</a>`].filter(Boolean).join(' · ');
+  const html = layout(`🙋 Product request: ${esc(r.productName)}`, `
+<p style="margin:0;font-size:15px;color:#3b4a41"><b>${esc(r.name)}</b> · ${contact}</p>
+${r.details ? `<p style="font-size:15px;color:#3b4a41">${esc(r.details)}</p>` : ''}
+${button(`${c.siteUrl}/admin?tab=requests`, 'Open requests in admin')}`);
+  const text = `Product request: ${r.productName}\n${r.details || ''}\nFrom: ${r.name} ${r.phone || ''} ${r.email || ''}`;
+  await send(c.storeInbox, `🙋 Product request: ${r.productName}`, html, text, r.email || undefined);
+}

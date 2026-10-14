@@ -13,7 +13,40 @@ model Category {
   slug      String    @unique
   icon      String    @default("🛒")
   sortOrder Int       @default(0)
+  // Set for a sub-category (e.g. Rice → 5 kg). Only one level deep.
+  parentId  String?
+  parent    Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children  Category[] @relation("SubCategories")
   products  Product[]
+}
+
+/** Seasonal shelves such as "Diwali 2026": one product can be in several. */
+model Collection {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  icon        String    @default("✨")
+  description String    @default("")
+  active      Boolean   @default(true)
+  startsAt    DateTime?
+  endsAt      DateTime?
+  sortOrder   Int       @default(0)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+/** "Can you stock this?" requests from customers. */
+model ProductRequest {
+  id          String   @id @default(cuid())
+  productName String
+  details     String?
+  name        String
+  phone       String?
+  email       String?
+  status      String   @default("NEW")
+  createdAt   DateTime @default(now())
+
+  @@index([status, createdAt])
 }
 
 model Product {
@@ -32,6 +65,7 @@ model Product {
   featured    Boolean     @default(false)
   categoryId  String
   category    Category    @relation(fields: [categoryId], references: [id])
+  collections Collection[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]

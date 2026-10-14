@@ -337,4 +337,33 @@ const sv: Record<string, string> = {
   'This code has expired': 'Koden har gått ut',
   'This code has been fully used': 'Koden har använts slut',
   'This code cannot be combined with items already on offer': 'Koden kan inte kombineras med varor som redan är på erbjudande',
+
+  // Collections and sub-categories
+  'Festival special': 'Högtidsspecial',
+  'All {category}': 'Alla {category}',
+
+  // Product requests
+  'Request a product': 'Önska en produkt',
+  'Request this product': 'Önska den här produkten',
+  'Can’t find what you need?': 'Hittar du inte det du söker?',
+  'Ask us to stock it →': 'Be oss ta in den →',
+  'Can’t find something you need? Tell us and we’ll try to stock it.': 'Saknar du något? Berätta för oss så försöker vi ta in det.',
+  'Which product are you looking for?': 'Vilken produkt letar du efter?',
+  'e.g. Aachi chicken masala 200 g': 't.ex. Aachi chicken masala 200 g',
+  'Anything else we should know?': 'Något mer vi bör veta?',
+  'Brand, pack size, how often you would buy it…': 'Märke, förpackningsstorlek, hur ofta du skulle köpa den…',
+  'Your name': 'Ditt namn',
+  'E-mail': 'E-post',
+  'Add a phone number or e-mail so we can tell you when it arrives.': 'Ange telefonnummer eller e-post så att vi kan meddela dig när den finns.',
+  'Sending…': 'Skickar…',
+  'Send request': 'Skicka önskemål',
+  'Thank you! We got your request': 'Tack! Vi har fått ditt önskemål',
+  'We’ll check if we can stock “{product}” and get back to you.': 'Vi kollar om vi kan ta in ”{product}” och återkommer till dig.',
+  'Request another product': 'Önska en till produkt',
+  'Tell us which product you are looking for': 'Berätta vilken produkt du letar efter',
+  'Please enter your name': 'Ange ditt namn',
+  'Please enter a valid e-mail': 'Ange en giltig e-postadress',
+  'Add a phone number or e-mail so we can reply': 'Ange telefonnummer eller e-post så att vi kan svara',
+  'Too many requests. Please call the store.': 'För många önskemål. Ring butiken.',
+  'Could not send your request': 'Kunde inte skicka ditt önskemål',
 };

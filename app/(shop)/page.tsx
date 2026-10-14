@@ -9,15 +9,21 @@ import HeroCarousel from '@/components/shop/HeroCarousel';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
 import { getT } from '@/lib/i18n-server';
 import { categoryName, type T } from '@/lib/i18n';
+import { categoryTree, liveCollection } from '@/lib/catalog';
 
 export default async function Home() {
   const now = new Date();
   const { lang, t } = await getT();
-  const [products, categories, coupon, sold] = await Promise.all([
+  const [products, cats, collections, coupon, sold] = await Promise.all([
     db.product.findMany({ where: { active: true }, include: { category: true }, orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }] }),
     db.category.findMany({
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
       include: { _count: { select: { products: { where: { active: true } } } } },
+    }),
+    db.collection.findMany({
+      where: liveCollection(now),
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
+      include: { products: { where: { active: true, stock: { gt: 0 } }, include: { category: true }, orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }], take: 10 } },
     }),
     db.coupon.findFirst({
       where: { active: true, OR: [{ endsAt: null }, { endsAt: { gt: now } }], AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }] },
@@ -31,6 +37,7 @@ export default async function Home() {
       take: 20,
     }),
   ]);
+  const categories = categoryTree(cats).map((c) => ({ ...c, total: c._count.products + c.children.reduce((a, s) => a + s._count.products, 0) }));
   const offers = products.filter((p) => p.stock > 0 && activeSalePrice(p, now) != null);
   const popular = products.filter((p) => p.stock > 0).slice(0, 10);
   // Best sellers by quantity ordered, topped up with popular items when there are few orders yet.
@@ -112,15 +119,29 @@ export default async function Home() {
           <Link href="/shop" className="seeAll">{t('See all →')}</Link>
         </div>
         <div className="catGrid">
-          {categories.filter((c) => c._count.products > 0).map((c) => (
+          {categories.filter((c) => c.total > 0).map((c) => (
             <Link key={c.id} href={`/shop?cat=${c.slug}`} className="catTile">
               <span className="catIcon" aria-hidden>{c.icon}</span>
               <b>{categoryName(lang, c)}</b>
-              <small>{t(c._count.products === 1 ? '{n} item' : '{n} items', { n: c._count.products })}</small>
+              <small>{t(c.total === 1 ? '{n} item' : '{n} items', { n: c.total })}</small>
             </Link>
           ))}
         </div>
       </section>
+
+      {collections.filter((c) => c.products.length > 0).map((c) => (
+        <section className="wrap section collSection" key={c.id}>
+          <div className="sectionHead">
+            <div>
+              <span className="eyebrow">{t('Festival special')}</span>
+              <h2>{c.icon} {c.name}</h2>
+              {c.description && <p className="muted">{c.description}</p>}
+            </div>
+            <Link href={`/shop?col=${c.slug}`} className="seeAll">{t('See all →')}</Link>
+          </div>
+          <div className="rail">{c.products.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+        </section>
+      ))}
 
       {offers.length > 0 && (
         <section className="offersBand">

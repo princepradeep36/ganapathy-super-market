@@ -968,3 +968,7 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 .logoLight .logoWord em { color: var(--gold); }
 .logoText small.logoTa { font-family: 'Catamaran', var(--font); text-transform: none; letter-spacing: 0; font-size: 15px; font-weight: 800; margin-top: 2px; }
 @media (max-width: 720px) { .logoText small.logoTa { font-size: 13px; } }
+
+/* Admin: forgot sign-in e-mail */
+.forgotAlt { width: 100%; display: grid; gap: 6px; text-align: left; margin-top: 6px; padding-top: 14px; border-top: 1px dashed var(--line); font-size: 14px; }
+.forgotAlt span { color: var(--muted); font-size: 13px; }

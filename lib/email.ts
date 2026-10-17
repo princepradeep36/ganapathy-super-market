@@ -183,13 +183,21 @@ ${button(`${c.siteUrl}/admin?tab=requests`, 'Open requests in admin')}`);
   await send(c.storeInbox, `🙋 Product request: ${r.productName}`, html, text, r.email || undefined);
 }
 
-/** One-time link for the admin to choose a new password. */
-export async function sendAdminReset(to: string, token: string, minutes: number) {
+/**
+ * One-time link for the admin to choose a new password. With `loginEmail` it is a
+ * "forgot my sign-in e-mail" reminder and also tells them which address to sign in with.
+ */
+export async function sendAdminReset(to: string, token: string, minutes: number, loginEmail?: string) {
   const c = mailConfig();
   const link = `${c.siteUrl}/admin/reset?token=${encodeURIComponent(token)}`;
-  const html = layout('Reset your admin password', `
-<p style="margin:0;font-size:15px;color:#3b4a41">Someone asked to reset the password for the ${esc(store.name)} store admin. The link works once, for ${minutes} minutes.</p>
+  const title = loginEmail ? 'Your admin sign-in details' : 'Reset your admin password';
+  const intro = loginEmail
+    ? `Someone asked for the sign-in details of the ${esc(store.name)} store admin.</p><p style="font-size:15px;color:#3b4a41">Sign-in e-mail: <b>${esc(loginEmail)}</b></p><p style="font-size:15px;color:#3b4a41">Forgot the password as well? Use the button below. It works once, for ${minutes} minutes.`
+    : `Someone asked to reset the password for the ${esc(store.name)} store admin. The link works once, for ${minutes} minutes.`;
+  const html = layout(title, `
+<p style="margin:0;font-size:15px;color:#3b4a41">${intro}</p>
 ${button(link, 'Choose a new password')}
-<p style="font-size:13px;color:#6b7a71">If you didn’t ask for this, ignore this e-mail; your password stays the same.</p>`);
-  await send(to, `Reset your admin password · ${store.name}`, html, `Reset your admin password (valid ${minutes} minutes):\n${link}\n\nIf you didn't ask for this, ignore this e-mail.`);
+<p style="font-size:13px;color:#6b7a71">If you didn’t ask for this, ignore this e-mail; nothing changes.</p>`);
+  const text = `${title}\n\n${loginEmail ? `Sign-in e-mail: ${loginEmail}\n\n` : ''}Choose a new password (valid ${minutes} minutes):\n${link}\n\nIf you didn't ask for this, ignore this e-mail.`;
+  await send(to, `${title} · ${store.name}`, html, text);
 }

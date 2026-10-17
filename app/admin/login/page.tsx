@@ -26,6 +26,7 @@ export default function Login() {
         <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
         {msg && <div className="alert alert-error">{msg}</div>}
         <button className="btn btn-block btn-lg" disabled={busy}>{busy ? 'Signing in…' : 'Sign in'}</button>
+        <a href="/admin/forgot" className="linkBtn">Forgot password?</a>
         <a href="/" className="linkBtn">← Back to shop</a>
       </form>
     </main>

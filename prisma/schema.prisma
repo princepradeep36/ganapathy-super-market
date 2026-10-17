@@ -145,3 +145,14 @@ model Banner {
   sortOrder Int       @default(0)
   createdAt DateTime  @default(now())
 }
+
+/** The single store admin. A password set via "Forgot password" replaces ADMIN_PASSWORD. */
+model AdminAccount {
+  id              String    @id @default("admin")
+  passwordHash    String?
+  // Bumped on every password change so older sign-ins stop working.
+  passwordVersion Int       @default(0)
+  resetTokenHash  String?
+  resetExpires    DateTime?
+  updatedAt       DateTime  @updatedAt
+}

@@ -182,3 +182,14 @@ ${button(`${c.siteUrl}/admin?tab=requests`, 'Open requests in admin')}`);
   const text = `Product request: ${r.productName}\n${r.details || ''}\nFrom: ${r.name} ${r.phone || ''} ${r.email || ''}`;
   await send(c.storeInbox, `🙋 Product request: ${r.productName}`, html, text, r.email || undefined);
 }
+
+/** One-time link for the admin to choose a new password. */
+export async function sendAdminReset(to: string, token: string, minutes: number) {
+  const c = mailConfig();
+  const link = `${c.siteUrl}/admin/reset?token=${encodeURIComponent(token)}`;
+  const html = layout('Reset your admin password', `
+<p style="margin:0;font-size:15px;color:#3b4a41">Someone asked to reset the password for the ${esc(store.name)} store admin. The link works once, for ${minutes} minutes.</p>
+${button(link, 'Choose a new password')}
+<p style="font-size:13px;color:#6b7a71">If you didn’t ask for this, ignore this e-mail; your password stays the same.</p>`);
+  await send(to, `Reset your admin password · ${store.name}`, html, `Reset your admin password (valid ${minutes} minutes):\n${link}\n\nIf you didn't ask for this, ignore this e-mail.`);
+}

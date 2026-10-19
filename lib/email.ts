@@ -22,7 +22,7 @@ export const mailConfig = () => ({
   user: env('SMTP_USER'),
   pass: env('SMTP_PASS').replace(/\s+/g, ''), // Gmail shows app passwords with spaces
   host: env('SMTP_HOST') || 'smtp.gmail.com',
-  port: Number(env('SMTP_PORT')) || 465,
+  port: Number(env('SMTP_PORT')) || 587, // 587 (STARTTLS): Hetzner blocks outgoing 465 and 25
   storeInbox: env('STORE_ORDER_EMAIL') || env('SMTP_USER'),
   siteUrl: (env('SITE_URL') || 'http://localhost:3000').replace(/\/$/, ''),
 });

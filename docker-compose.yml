@@ -41,7 +41,7 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
-      SMTP_PORT: ${SMTP_PORT:-465}
+      SMTP_PORT: ${SMTP_PORT:-587}
       STORE_ORDER_EMAIL: ${STORE_ORDER_EMAIL:-}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       DELIVERY_FEE_ORE: ${DELIVERY_FEE_ORE:-4900}

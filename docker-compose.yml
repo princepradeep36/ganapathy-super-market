@@ -48,6 +48,7 @@ services:
       FREE_DELIVERY_MIN_ORE: ${FREE_DELIVERY_MIN_ORE:-49900}
       MIN_DELIVERY_ORDER_ORE: ${MIN_DELIVERY_ORDER_ORE:-19900}
       LOW_STOCK_THRESHOLD: ${LOW_STOCK_THRESHOLD:-10}
+      SEED_DEMO: ${SEED_DEMO:-}
     volumes:
       - product_uploads:/app/public/uploads
     depends_on:

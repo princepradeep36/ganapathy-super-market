@@ -1,14 +1,21 @@
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
-import { store } from '@/lib/config';
+import { siteUrl, store } from '@/lib/config';
 import { getLang } from '@/lib/i18n-server';
 
-export const metadata: Metadata = {
-  title: { default: `${store.name} · Indian groceries in Sweden`, template: `%s · ${store.name}` },
-  icons: { icon: '/brand/logo.png', apple: '/brand/apple-icon.png' },
-  openGraph: { images: ['/brand/banner.jpg'] },
-  description: 'Authentic Indian groceries — rice, dals, spices, fresh vegetables and snacks. Order online for store pickup or home delivery.',
-};
+const DESCRIPTION = `${store.name} — Indian and Tamil grocery store in ${store.deliveryArea}. Rice, atta, dals, spices, fresh vegetables, snacks and sweets. Order online for free store pickup or home delivery.`;
+
+// Built per request so the real site address (SITE_URL) is used for links shared and found in search.
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    metadataBase: new URL(siteUrl()),
+    title: { default: `${store.name} · Indian groceries in ${store.deliveryArea}`, template: `%s · ${store.name}` },
+    description: DESCRIPTION,
+    keywords: ['Indian grocery', 'Indian store', 'Tamil shop', 'Indisk livsmedelsbutik', 'indiska varor', store.deliveryArea, 'online grocery Sweden', store.name],
+    icons: { icon: '/brand/logo.png', apple: '/brand/apple-icon.png' },
+    openGraph: { type: 'website', siteName: store.name, title: `${store.name} · Indian groceries in ${store.deliveryArea}`, description: DESCRIPTION, images: ['/brand/banner.jpg'], locale: 'en_SE' },
+  };
+}
 export const viewport: Viewport = { themeColor: '#0d4b36', width: 'device-width', initialScale: 1 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

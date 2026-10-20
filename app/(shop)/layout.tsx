@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { db } from '@/lib/db';
-import { mapEmbed, publicStore, store, telHref } from '@/lib/config';
+import { mapEmbed, publicStore, siteUrl, store, telHref } from '@/lib/config';
 import Logo from '@/components/Logo';
 import { sek } from '@/lib/money';
 import { CartButton, CartDrawer, MobileCartBar, MobileNav, Toaster } from '@/components/shop/CartUI';
@@ -135,7 +135,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          '@context': 'https://schema.org', '@type': 'GroceryStore', name: store.name, telephone: telHref().slice(4), hasMap: store.mapUrl,
+          '@context': 'https://schema.org', '@type': 'GroceryStore', name: store.name, url: siteUrl(), image: siteUrl() + '/brand/banner.jpg', logo: siteUrl() + '/brand/logo.png', email: store.email || undefined, telephone: telHref().slice(4), hasMap: store.mapUrl,
           address: { '@type': 'PostalAddress', streetAddress: store.address.split(',')[0], postalCode: '252 18', addressLocality: 'Helsingborg', addressCountry: 'SE' },
           openingHours: 'Mo-Su 09:00-20:30',
         }) }}

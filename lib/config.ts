@@ -32,6 +32,9 @@ export const telHref = () => {
   const d = store.phone.replace(/[^\d+]/g, '');
   return 'tel:' + (d.startsWith('+') ? d : d.startsWith('0') ? '+46' + d.slice(1) : d);
 };
+/** Public address of the shop, e.g. https://tamilkadai.se (no trailing slash). */
+export const siteUrl = () => (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+
 /** Google Maps embed for the store address (no API key needed). */
 export const mapEmbed = () => 'https://www.google.com/maps?output=embed&q=' + encodeURIComponent(store.address);
 

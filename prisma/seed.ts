@@ -59,6 +59,11 @@ async function main() {
 
   // Demo products are only added to an empty shop, so real catalogue edits are never touched.
   const existing = await db.product.count();
+  // SEED_DEMO=off: a real shop starts with the categories only, no demo products or coupon.
+  if (process.env.SEED_DEMO === 'off') {
+    console.log('Seed: SEED_DEMO=off — categories only.');
+    return;
+  }
   if (existing > 0 && process.env.SEED_DEMO !== 'force') {
     console.log(`Seed: ${existing} products already exist — skipping demo catalogue.`);
     return;

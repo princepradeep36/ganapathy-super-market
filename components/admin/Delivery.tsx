@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { availableSlots, type Schedule } from '@/lib/schedule';
+import { availableSlots, sortSlots, type Schedule } from '@/lib/slots';
 import { api, toast } from './ui';
 
 const WEEK: [number, string][] = [[1, 'Mon'], [2, 'Tue'], [3, 'Wed'], [4, 'Thu'], [5, 'Fri'], [6, 'Sat'], [0, 'Sun']];
@@ -20,7 +20,7 @@ export default function Delivery({ schedule }: { schedule: Schedule }) {
   function addSlot() {
     const v = newSlot.trim();
     if (!v) return;
-    set({ slots: [...s.slots, v] });
+    set({ slots: sortSlots([...s.slots, v]) });
     setNewSlot('');
   }
   async function save() {
@@ -58,7 +58,7 @@ export default function Delivery({ schedule }: { schedule: Schedule }) {
           </div>
 
           <h3>Time slots</h3>
-          <p className="muted small">Shown in this order. Write them like 10:00–12:00.</p>
+          <p className="muted small">Sorted by start time automatically. Write them like 10:00–12:00.</p>
           <ul className="slotList">
             {s.slots.map((slot, i) => (
               <li key={slot + i}>

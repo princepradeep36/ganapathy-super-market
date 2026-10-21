@@ -1,3 +1,4 @@
+import { sortSlots } from './slots';
 import { z } from 'zod';
 
 const money = z.coerce.number().min(0, 'Price cannot be negative').max(1_000_000);
@@ -107,7 +108,7 @@ const Schedule = z.object({
 
 export function scheduleInput(raw: unknown) {
   const d = Schedule.parse(raw);
-  // Normalise "10.00-12.00" to "10:00–12:00", keep the order the admin chose, drop duplicates.
-  const slots = [...new Set(d.slots.map((s) => s.replace(/\./g, ':').replace(/\s*[–-]\s*/, '–')))];
+  // Normalise "10.00-12.00" to "10:00–12:00", drop duplicates and sort by start time.
+  const slots = sortSlots([...new Set(d.slots.map((s) => s.replace(/\./g, ':').replace(/\s*[–-]\s*/, '–')))]);
   return { ...d, slots, days: [...new Set(d.days)].sort(), closedDates: [...new Set(d.closedDates)].sort() };
 }

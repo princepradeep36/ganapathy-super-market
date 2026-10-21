@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { cart, cartTotals, rememberOrder, useCart, type CartItem } from '@/lib/cart';
 import { sek } from '@/lib/money';
-import type { SlotOption } from '@/lib/schedule';
+import type { SlotOption } from '@/lib/slots';
 import { inDeliveryArea, type PublicStore } from '@/lib/config';
 import ProductImage from './ProductImage';
 import { translateError } from '@/lib/i18n';

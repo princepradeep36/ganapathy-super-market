@@ -1,5 +1,6 @@
 import { db } from '@/lib/db';
 import { clientIp, rateLimit } from '@/lib/ratelimit';
+import { orderNo } from '@/lib/orderNo';
 
 const digits = (s: string) => String(s || '').replace(/\D/g, '').slice(-7);
 
@@ -10,7 +11,7 @@ export async function GET(req: Request) {
     ? await db.order.findMany({ where: { id: { in: ids } }, include: { _count: { select: { items: true } } }, orderBy: { createdAt: 'desc' } })
     : [];
   return Response.json({
-    orders: orders.map((o) => ({ id: o.id, ref: o.id.slice(-8).toUpperCase(), createdAt: o.createdAt, status: o.status, deliveryMethod: o.deliveryMethod, total: o.total, itemCount: o._count.items })),
+    orders: orders.map((o) => ({ id: o.id, ref: orderNo(o), createdAt: o.createdAt, status: o.status, deliveryMethod: o.deliveryMethod, total: o.total, itemCount: o._count.items })),
   });
 }
 
@@ -18,9 +19,12 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   if (!rateLimit('lookup:' + clientIp(req), 10, 10 * 60_000)) return Response.json({ error: 'Too many attempts, try again later' }, { status: 429 });
   const d = await req.json().catch(() => ({}));
-  const ref = String(d.ref || '').trim().replace(/^#/, '').toLowerCase();
-  if (ref.length < 6) return Response.json({ error: 'Enter the 8-character order number' }, { status: 400 });
-  const candidates = await db.order.findMany({ where: { id: { endsWith: ref } }, take: 5 });
+  const ref = String(d.ref || '').trim().replace(/^#/, '').replace(/\s+/g, '').toLowerCase();
+  if (ref.length < 6) return Response.json({ error: 'Enter the 8-digit order number' }, { status: 400 });
+  // 8-digit order numbers; older orders can still be found by their letter code.
+  const candidates = /^\d{8}$/.test(ref)
+    ? await db.order.findMany({ where: { number: Number(ref) }, take: 1 })
+    : await db.order.findMany({ where: { id: { endsWith: ref } }, take: 5 });
   const o = candidates.find((x) => digits(x.phone) === digits(d.phone));
   if (!o) return Response.json({ error: 'No order matches that number and phone' }, { status: 404 });
   return Response.json({ id: o.id });

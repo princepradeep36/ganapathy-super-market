@@ -93,6 +93,8 @@ model Coupon {
 
 model Order {
   id                    String      @id @default(cuid())
+  // 8-digit number customers quote to the store (older orders get one on start-up).
+  number                Int?        @unique
   customerName          String
   email                 String
   phone                 String
@@ -155,4 +157,18 @@ model AdminAccount {
   resetTokenHash  String?
   resetExpires    DateTime?
   updatedAt       DateTime  @updatedAt
+}
+
+/** Delivery / pickup times offered at checkout, set by the admin. */
+model DeliverySchedule {
+  id            String   @id @default("main")
+  // Weekdays with slots: 0 = Sunday … 6 = Saturday.
+  days          Int[]
+  slots         String[]
+  cutoffMinutes Int      @default(120)
+  daysAhead     Int      @default(3)
+  // "YYYY-MM-DD" dates with no slots (holidays).
+  closedDates   String[]
+  allowAsap     Boolean  @default(true)
+  updatedAt     DateTime @updatedAt
 }

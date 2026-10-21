@@ -12,7 +12,7 @@ import { customerStatusLabel } from './status';
 type Item = { name: string; quantity: number; unitPrice: number; regularUnitPrice: number };
 export type MailOrder = {
   id: string; customerName: string; email: string; phone: string; address: string; postalCode: string; city: string;
-  deliveryMethod: string; deliverySlot: string | null; notes: string | null; paymentMethod: string; status: string;
+  number?: number | null; deliveryMethod: string; deliverySlot: string | null; notes: string | null; paymentMethod: string; status: string;
   originalSubtotal: number; itemDiscountTotal: number; couponCode: string | null; orderDiscountTotal: number;
   deliveryFee: number; total: number; createdAt: Date; items: Item[];
 };
@@ -64,7 +64,8 @@ export function queueMail(job: () => Promise<unknown>) {
 // ---------- templates ----------
 const kr = (ore: number) => new Intl.NumberFormat('sv-SE', { style: 'currency', currency: 'SEK' }).format(ore / 100);
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]!);
-export const orderRef = (id: string) => id.slice(-8).toUpperCase();
+export { orderNo } from './orderNo';
+import { orderNo } from './orderNo';
 const PAY: Record<string, string> = { PAY_AT_PICKUP: 'Pay at pickup', PAY_ON_DELIVERY: 'Pay on delivery', SWISH: 'Swish' };
 
 function layout(title: string, body: string) {
@@ -90,7 +91,7 @@ function details(o: MailOrder) {
   const line = (l: string, v: string, green = false) => `<tr><td style="padding:4px 0;${green ? 'color:#1d7f46' : ''}">${l}</td><td align="right" style="padding:4px 0;${green ? 'color:#1d7f46' : ''}">${v}</td></tr>`;
   return `
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f7f3;border-radius:12px;margin:16px 0;font-size:14px"><tr><td style="padding:14px 16px">
-  <b>Order #${orderRef(o.id)}</b> · ${o.createdAt.toLocaleString('sv-SE', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Stockholm' })}<br>
+  <b>Order #${orderNo(o)}</b> · ${o.createdAt.toLocaleString('sv-SE', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Stockholm' })}<br>
   ${delivery ? `🚚 Home delivery to <b>${esc(o.address)}, ${esc(o.postalCode)} ${esc(o.city)}</b>` : `🏪 Store pickup at <b>${esc(store.address)}</b>`}<br>
   🕘 ${esc(o.deliverySlot || 'As soon as possible')} · 💳 ${PAY[o.paymentMethod] || esc(o.paymentMethod)}
   ${o.notes ? `<br>📝 “${esc(o.notes)}”` : ''}
@@ -110,7 +111,7 @@ const button = (href: string, label: string) =>
 
 function plain(o: MailOrder) {
   return [
-    `Order #${orderRef(o.id)}`,
+    `Order #${orderNo(o)}`,
     ...o.items.map((i) => `${i.quantity} x ${i.name} — ${kr(i.unitPrice * i.quantity)}`),
     `Total: ${kr(o.total)}`,
     o.deliveryMethod === 'DELIVERY' ? `Delivery to: ${o.address}, ${o.postalCode} ${o.city}` : `Pickup at: ${store.address}`,
@@ -128,7 +129,7 @@ export function customerConfirmation(o: MailOrder) {
 ${details(o)}
 ${button(`${c.siteUrl}/order/${o.id}`, 'Track your order')}
 <p style="font-size:13px;color:#6b7a71">Questions? Just reply to this e-mail or call ${esc(store.phone)}.</p>`);
-  return { subject: `Order confirmed #${orderRef(o.id)} · ${store.name}`, html, text: `Thank you for your order!\n\n${plain(o)}\n\nTrack: ${c.siteUrl}/order/${o.id}` };
+  return { subject: `Order confirmed #${orderNo(o)} · ${store.name}`, html, text: `Thank you for your order!\n\n${plain(o)}\n\nTrack: ${c.siteUrl}/order/${o.id}` };
 }
 
 export function storeAlert(o: MailOrder) {
@@ -138,7 +139,7 @@ export function storeAlert(o: MailOrder) {
 ${details(o)}
 ${button(`${c.siteUrl}/admin?tab=orders#${o.id}`, 'Open in admin')}`);
   const kind = o.deliveryMethod === 'DELIVERY' ? 'Delivery' : 'Pickup';
-  return { subject: `🛒 New order #${orderRef(o.id)} · ${kr(o.total)} · ${kind} · ${o.customerName}`, html, text: `New order\n\n${plain(o)}\n\nAdmin: ${c.siteUrl}/admin?tab=orders` };
+  return { subject: `🛒 New order #${orderNo(o)} · ${kr(o.total)} · ${kind} · ${o.customerName}`, html, text: `New order\n\n${plain(o)}\n\nAdmin: ${c.siteUrl}/admin?tab=orders` };
 }
 
 export function statusUpdate(o: MailOrder) {
@@ -150,7 +151,7 @@ export function statusUpdate(o: MailOrder) {
     CANCELLED: `Your order has been cancelled. If this is unexpected, please call us on ${esc(store.phone)}.`,
   };
   const html = layout(label, `<p style="margin:0;font-size:15px;color:#3b4a41">${msg[o.status] || ''}</p>${details(o)}${button(`${c.siteUrl}/order/${o.id}`, 'View order')}`);
-  return { subject: `${label} · order #${orderRef(o.id)} · ${store.name}`, html, text: `${label}\n\n${plain(o)}` };
+  return { subject: `${label} · order #${orderNo(o)} · ${store.name}`, html, text: `${label}\n\n${plain(o)}` };
 }
 
 /** Called right after an order is created. */

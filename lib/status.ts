@@ -23,11 +23,4 @@ export function nextStatus(status: string): OrderStatus | null {
   return i >= 0 && i < ORDER_FLOW.length - 1 ? ORDER_FLOW[i + 1] : null;
 }
 
-export const DELIVERY_SLOTS = [
-  'Today 16:00–18:00',
-  'Today 18:00–20:00',
-  'Tomorrow 10:00–12:00',
-  'Tomorrow 12:00–14:00',
-  'Tomorrow 16:00–18:00',
-  'Tomorrow 18:00–20:00',
-];
+

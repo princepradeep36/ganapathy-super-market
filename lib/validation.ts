@@ -94,3 +94,20 @@ export function bannerInput(raw: unknown) {
   if (d.startsAt && d.endsAt && d.endsAt <= d.startsAt) throw new Error('End date must be after the start');
   return d;
 }
+
+const SLOT = /^([01]?\d|2[0-3])[:.][0-5]\d\s*[–-]\s*([01]?\d|2[0-3])[:.][0-5]\d$/;
+const Schedule = z.object({
+  days: z.array(z.coerce.number().int().min(0).max(6)).max(7),
+  slots: z.array(z.string().trim().regex(SLOT, 'Write times like 10:00–12:00')).max(20),
+  cutoffMinutes: z.coerce.number().int().min(0, 'Cut-off cannot be negative').max(7 * 1440),
+  daysAhead: z.coerce.number().int().min(1, 'Show at least 1 day').max(14, 'Show at most 14 days'),
+  closedDates: z.array(z.string().regex(/^\d{4}-\d{2}-\d{2}$/)).max(100),
+  allowAsap: z.boolean(),
+});
+
+export function scheduleInput(raw: unknown) {
+  const d = Schedule.parse(raw);
+  // Normalise "10.00-12.00" to "10:00–12:00", keep the order the admin chose, drop duplicates.
+  const slots = [...new Set(d.slots.map((s) => s.replace(/\./g, ':').replace(/\s*[–-]\s*/, '–')))];
+  return { ...d, slots, days: [...new Set(d.days)].sort(), closedDates: [...new Set(d.closedDates)].sort() };
+}

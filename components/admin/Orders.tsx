@@ -36,7 +36,7 @@ export default function Orders({ orders }: { orders: any[] }) {
   const list = useMemo(() => {
     const s = FILTERS.find((f) => f[0] === filter)![2];
     const needle = q.trim().toLowerCase();
-    return orders.filter((o) => (!s.length || s.includes(o.status)) && (!needle || [ref(o.id), o.customerName, o.phone, o.email].join(' ').toLowerCase().includes(needle)));
+    return orders.filter((o) => (!s.length || s.includes(o.status)) && (!needle || [ref(o), o.customerName, o.phone, o.email].join(' ').toLowerCase().includes(needle)));
   }, [orders, filter, q]);
   const open = orders.find((o) => o.id === openId);
 
@@ -77,7 +77,7 @@ export default function Orders({ orders }: { orders: any[] }) {
               <tbody>
                 {list.map((o) => (
                   <tr key={o.id} onClick={() => setOpenId(o.id)} className={`clickRow${o.status === 'NEW' ? ' rowNew' : ''}`}>
-                    <td><b>#{ref(o.id)}</b><small>{ago(o.createdAt)}</small></td>
+                    <td><b>#{ref(o)}</b><small>{ago(o.createdAt)}</small></td>
                     <td>{o.customerName}<small>{o.phone}</small></td>
                     <td>{o.deliveryMethod === 'DELIVERY' ? '🚚 Delivery' : '🏪 Pickup'}<small>{o.deliverySlot || 'ASAP'}</small></td>
                     <td>{o.items.reduce((a: number, i: any) => a + i.quantity, 0)}</td>
@@ -96,10 +96,10 @@ export default function Orders({ orders }: { orders: any[] }) {
 
       {open && (
         <div className="sheetRoot" onMouseDown={(e) => e.target === e.currentTarget && setOpenId(null)}>
-          <aside className="sheet" role="dialog" aria-modal="true" aria-label={`Order ${ref(open.id)}`}>
+          <aside className="sheet" role="dialog" aria-modal="true" aria-label={`Order ${ref(open)}`}>
             <header className="sheetHead">
               <div>
-                <span className="kicker">Order #{ref(open.id)}</span>
+                <span className="kicker">Order #{ref(open)}</span>
                 <h2>{open.customerName}</h2>
                 <span className={`pill pill-${open.status.toLowerCase()}`}>{STATUS_LABEL[open.status]}</span>{' '}
                 <span className="muted small">{new Date(open.createdAt).toLocaleString('sv-SE', { dateStyle: 'medium', timeStyle: 'short' })}</span>
@@ -125,7 +125,7 @@ export default function Orders({ orders }: { orders: any[] }) {
               <div className="contactRow">
                 <a className="btn btn-ghost btn-sm" href={`tel:${open.phone}`}>📞 Call</a>
                 <a className="btn btn-ghost btn-sm" href={wa(open.phone)} target="_blank" rel="noreferrer">💬 WhatsApp</a>
-                <a className="btn btn-ghost btn-sm" href={`mailto:${open.email}?subject=Your order ${ref(open.id)}`}>✉️ Email</a>
+                <a className="btn btn-ghost btn-sm" href={`mailto:${open.email}?subject=Your order ${ref(open)}`}>✉️ Email</a>
                 <button className="btn btn-ghost btn-sm" onClick={() => window.print()}>🖨 Packing slip</button>
               </div>
 
@@ -168,7 +168,7 @@ export default function Orders({ orders }: { orders: any[] }) {
 
             {/* Printed via window.print() — only this block is visible on paper. */}
             <div className="printSlip">
-              <h1>Packing slip · #{ref(open.id)}</h1>
+              <h1>Packing slip · #{ref(open)}</h1>
               <p>{new Date(open.createdAt).toLocaleString('sv-SE')} · {open.deliveryMethod === 'DELIVERY' ? 'DELIVERY' : 'PICKUP'} · {open.deliverySlot || 'ASAP'}</p>
               <p><b>{open.customerName}</b> · {open.phone}<br />{open.deliveryMethod === 'DELIVERY' && `${open.address}, ${open.postalCode} ${open.city}`}</p>
               {open.notes && <p>Note: {open.notes}</p>}

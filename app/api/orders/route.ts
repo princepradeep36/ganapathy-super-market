@@ -6,6 +6,8 @@ import { couponDiscount } from '@/lib/coupons';
 import { deliveryFeeFor, inDeliveryArea, store } from '@/lib/config';
 import { queueMail, sendOrderPlaced } from '@/lib/email';
 import { clientIp, rateLimit } from '@/lib/ratelimit';
+import { newOrderNumber } from '@/lib/orderNo';
+import { availableSlots, getSchedule } from '@/lib/schedule';
 
 const S = z
   .object({
@@ -30,6 +32,10 @@ export async function POST(req: Request) {
   try {
     if (!rateLimit('order:' + clientIp(req), 10, 10 * 60_000)) throw new Error('Too many orders in a short time. Please call the store.');
     const d = S.parse(await req.json());
+    // The chosen time must still be on offer (admin can change days, slots and cut-off).
+    const schedule = await getSchedule();
+    if (d.deliverySlot ? !availableSlots(schedule).some((s) => s.value === d.deliverySlot) : !schedule.allowAsap)
+      throw new Error('That time is no longer available. Please choose another time.');
     const ids = d.items.map((x) => x.productId);
     if (new Set(ids).size !== ids.length) throw new Error('Duplicate products in basket');
     const products = await db.product.findMany({ where: { id: { in: ids }, active: true } });
@@ -77,6 +83,7 @@ export async function POST(req: Request) {
       }
       return tx.order.create({
         data: {
+          number: await newOrderNumber(tx),
           customerName: d.customerName, email: d.email, phone: d.phone,
           address: d.deliveryMethod === 'DELIVERY' ? d.address : '',
           postalCode: d.deliveryMethod === 'DELIVERY' ? d.postalCode : '',

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { cart, cartTotals, rememberOrder, useCart, type CartItem } from '@/lib/cart';
 import { sek } from '@/lib/money';
-import { DELIVERY_SLOTS } from '@/lib/status';
+import type { SlotOption } from '@/lib/schedule';
 import { inDeliveryArea, type PublicStore } from '@/lib/config';
 import ProductImage from './ProductImage';
 import { translateError } from '@/lib/i18n';
@@ -13,7 +13,7 @@ import { useLang, useT } from './I18n';
 type Coupon = { code: string; name: string; discount: number } | null;
 const CUSTOMER_KEY = 'gsm-customer';
 
-export default function Checkout({ cfg, storeAddress, storeHours, mapUrl }: { cfg: PublicStore; storeAddress: string; storeHours: string; mapUrl: string }) {
+export default function Checkout({ cfg, storeAddress, storeHours, mapUrl, slots, allowAsap }: { cfg: PublicStore; storeAddress: string; storeHours: string; mapUrl: string; slots: SlotOption[]; allowAsap: boolean }) {
   const items = useCart();
   const router = useRouter();
   const tr = useT();
@@ -167,10 +167,12 @@ export default function Checkout({ cfg, storeAddress, storeHours, mapUrl }: { cf
               </div>
             )}
             <label className="field">{tr(method === 'DELIVERY' ? 'Delivery time' : 'Preferred pickup time')}
-              <select name="slot" defaultValue={DELIVERY_SLOTS[0]}>
-                {DELIVERY_SLOTS.map((s) => <option key={s} value={s}>{tr(s)}</option>)}
-                <option value="">{tr('As soon as possible')}</option>
-              </select>
+              {slots.length || allowAsap ? (
+                <select name="slot" defaultValue={slots[0]?.value ?? ''}>
+                  {slots.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  {allowAsap && <option value="">{tr('As soon as possible')}</option>}
+                </select>
+              ) : <span className="alert alert-warn">{tr('No times available right now. Please call the store.')}</span>}
             </label>
           </section>
 

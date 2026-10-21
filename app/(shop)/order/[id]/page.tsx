@@ -6,6 +6,7 @@ import { sek } from '@/lib/money';
 import { store, telHref } from '@/lib/config';
 import { ORDER_FLOW, customerStatusLabel } from '@/lib/status';
 import { getT } from '@/lib/i18n-server';
+import { orderNo } from '@/lib/orderNo';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -18,7 +19,7 @@ export default async function OrderPage({ params, searchParams }: { params: Prom
   if (!o) notFound();
   const { t } = await getT();
   const status = (s: string) => t(customerStatusLabel(s, o.deliveryMethod));
-  const ref = o.id.slice(-8).toUpperCase();
+  const ref = orderNo(o);
   const cancelled = o.status === 'CANCELLED';
   const step = ORDER_FLOW.indexOf(o.status as any);
   const delivery = o.deliveryMethod === 'DELIVERY';

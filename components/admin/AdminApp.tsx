@@ -12,6 +12,8 @@ import Coupons from './Coupons';
 import Collections from './Collections';
 import Requests from './Requests';
 import Banners from './Banners';
+import Delivery from './Delivery';
+import type { Schedule } from '@/lib/schedule';
 
 export type Stats = {
   todayRevenue: number; todayOrders: number; pending: number; newOrders: number;
@@ -20,7 +22,7 @@ export type Stats = {
   top: { name: string; qty: number }[];
   lowStockThreshold: number;
 };
-type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; collections: any[]; banners: any[]; requests: any[]; coupons: any[]; orders: any[]; storeName: string };
+type Props = { tab: string; stats: Stats; products: any[]; categories: any[]; collections: any[]; banners: any[]; schedule: Schedule; requests: any[]; coupons: any[]; orders: any[]; storeName: string };
 
 const NAV: [string, string, string][] = [
   ['overview', 'Overview', '▦'],
@@ -30,6 +32,7 @@ const NAV: [string, string, string][] = [
   ['collections', 'Collections', '🪔'],
   ['banners', 'Banners', '🖼️'],
   ['coupons', 'Coupons', '🏷️'],
+  ['delivery', 'Delivery times', '🕘'],
   ['requests', 'Requests', '🙋'],
 ];
 
@@ -75,6 +78,7 @@ export default function AdminApp(p: Props) {
         {p.tab === 'collections' && <Collections collections={p.collections} />}
         {p.tab === 'banners' && <Banners banners={p.banners} />}
         {p.tab === 'coupons' && <Coupons coupons={p.coupons} />}
+        {p.tab === 'delivery' && <Delivery schedule={p.schedule} />}
         {p.tab === 'requests' && <Requests requests={p.requests} />}
       </main>
       <nav className="abottom" aria-label="Admin">

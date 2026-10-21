@@ -1,3 +1,4 @@
+import { orderNo } from '@/lib/orderNo';
 import { db } from '@/lib/db';
 import { adminError, requireAdmin } from '@/lib/admin';
 
@@ -16,7 +17,7 @@ export async function GET(r: Request) {
     const orders = await db.order.findMany({ where: { createdAt: { gte: since } }, include: { items: true }, orderBy: { createdAt: 'desc' } });
     const head = ['Order', 'Date', 'Status', 'Paid', 'Customer', 'Phone', 'Email', 'Method', 'Slot', 'Address', 'Items', 'Item value', 'Offer savings', 'Coupon', 'Coupon savings', 'Delivery fee', 'Total'];
     const rows = orders.map((o) => [
-      o.id.slice(-8).toUpperCase(), o.createdAt.toISOString().slice(0, 16).replace('T', ' '), o.status, o.paid ? 'yes' : 'no',
+      orderNo(o), o.createdAt.toISOString().slice(0, 16).replace('T', ' '), o.status, o.paid ? 'yes' : 'no',
       o.customerName, o.phone, o.email, o.deliveryMethod, o.deliverySlot, [o.address, o.postalCode, o.city].filter(Boolean).join(' '),
       o.items.map((i) => `${i.quantity}x ${i.name}`).join(' | '),
       kr(o.originalSubtotal), kr(o.itemDiscountTotal), o.couponCode, kr(o.orderDiscountTotal), kr(o.deliveryFee), kr(o.total),

@@ -57,6 +57,16 @@ async function main() {
     catIds.set(slug, c.id);
   }
 
+  // Orders placed before 8-digit order numbers existed get one now.
+  for (const o of await db.order.findMany({ where: { number: null }, select: { id: true } })) {
+    for (;;) {
+      const n = 10_000_000 + Math.floor(Math.random() * 90_000_000);
+      if (await db.order.findUnique({ where: { number: n } })) continue;
+      await db.order.update({ where: { id: o.id }, data: { number: n } });
+      break;
+    }
+  }
+
   // Demo products are only added to an empty shop, so real catalogue edits are never touched.
   const existing = await db.product.count();
   // SEED_DEMO=off: a real shop starts with the categories only, no demo products or coupon.

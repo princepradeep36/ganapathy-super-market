@@ -55,7 +55,7 @@ export default function MyOrders() {
         <h2>{t('Find an order')}</h2>
         <p className="muted">{t('Ordered on another phone? Enter your order number and mobile number.')}</p>
         <form onSubmit={find} className="formGrid">
-          <label>{t('Order number')}<input name="ref" required placeholder={t('e.g. 7K2M9QX4')} /></label>
+          <label>{t('Order number')}<input name="ref" required placeholder={t('e.g. 48213907')} inputMode="numeric" /></label>
           <label>{t('Mobile number')}<input name="phone" type="tel" required /></label>
           <div className="full"><button className="btn">{t('Find order')}</button>{err && <span className="err"> {err}</span>}</div>
         </form>

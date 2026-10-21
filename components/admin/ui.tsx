@@ -58,4 +58,5 @@ export const ago = (d: string | Date) => {
   if (m < 1440) return `${Math.round(m / 60)} h ago`;
   return new Date(d).toLocaleDateString('sv-SE');
 };
-export const ref = (id: string) => id.slice(-8).toUpperCase();
+/** 8-digit order number (older orders: their letter code). */
+export const ref = (o: { id: string; number?: number | null }) => (o.number ? String(o.number) : o.id.slice(-8).toUpperCase());

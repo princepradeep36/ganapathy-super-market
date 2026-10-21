@@ -105,7 +105,7 @@ export default function Overview({ stats, orders, products }: { stats: Stats; or
               {newOrders.slice(0, 6).map((o) => (
                 <li key={o.id}>
                   <Link href={`/admin?tab=orders#${o.id}`}>
-                    <b>#{ref(o.id)}</b>
+                    <b>#{ref(o)}</b>
                     <span>{o.customerName}<small>{o.deliveryMethod === 'DELIVERY' ? '🚚 Delivery' : '🏪 Pickup'} · {o.deliverySlot || 'ASAP'}</small></span>
                     <span className="muted small">{ago(o.createdAt)}</span>
                     <b>{kr(o.total)}</b>
@@ -114,7 +114,7 @@ export default function Overview({ stats, orders, products }: { stats: Stats; or
               ))}
             </ul>
           ) : (
-            <p className="muted">All caught up — no new orders waiting. {orders[0] && <>Last order: #{ref(orders[0].id)} ({STATUS_LABEL[orders[0].status]}).</>}</p>
+            <p className="muted">All caught up — no new orders waiting. {orders[0] && <>Last order: #{ref(orders[0])} ({STATUS_LABEL[orders[0].status]}).</>}</p>
           )}
         </section>
         <section className="panel">

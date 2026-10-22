@@ -64,7 +64,7 @@ export default async function Home() {
               const img = (
                 <>
                   <span className="bannerBlur" style={{ backgroundImage: `url(${b.image})` }} aria-hidden />
-                  <img src={b.image} alt={b.title} loading="lazy" />
+                  <img src={b.image} alt={b.title} />
                 </>
               );
               const cls = `banner bannerFit${b.fit === 'WHOLE' ? '' : ' bannerCover'}`;

@@ -88,6 +88,8 @@ const Banner = z.object({
   startsAt: optDate.optional(),
   endsAt: optDate.optional(),
   sortOrder: z.coerce.number().int().default(0),
+  fit: z.enum(['FILL', 'WHOLE']).default('FILL'),
+  focus: z.enum(['top', 'center', 'bottom']).default('center'),
 });
 
 export function bannerInput(raw: unknown) {

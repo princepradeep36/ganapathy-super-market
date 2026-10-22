@@ -145,6 +145,10 @@ model Banner {
   startsAt  DateTime?
   endsAt    DateTime?
   sortOrder Int       @default(0)
+  // FILL: covers the whole slide (edges may be cropped); WHOLE: shows the entire image.
+  fit       String    @default("FILL")
+  // Which part stays visible when filling: top, center or bottom.
+  focus     String    @default("center")
   createdAt DateTime  @default(now())
 }
 

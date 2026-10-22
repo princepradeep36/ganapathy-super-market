@@ -66,6 +66,8 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
   const [err, setErr] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(banner.image || null);
+  const [fit, setFit] = useState<string>(banner.fit || 'FILL');
+  const [focus, setFocus] = useState<string>(banner.focus || 'center');
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -81,7 +83,7 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
       }
       if (!image) throw new Error('Upload a banner image');
       const body = {
-        image, title: f.get('title'), link: f.get('link'), sortOrder: f.get('sortOrder'),
+        image, title: f.get('title'), link: f.get('link'), sortOrder: f.get('sortOrder'), fit, focus,
         startsAt: fromInputDate(f.get('startsAt')), endsAt: fromInputDate(f.get('endsAt')), active: f.get('active') === 'on',
       };
       await api(banner.id ? '/api/admin/banners/' + banner.id : '/api/admin/banners', { method: banner.id ? 'PUT' : 'POST', json: body });
@@ -107,15 +109,28 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
   return (
     <Modal title={banner.id ? 'Edit banner' : 'Add banner'} kicker="Banner" onClose={onClose} wide>
       <form onSubmit={save}>
-        <div className="bannerPreview">{preview ? <><span className="bannerBlur" style={{ backgroundImage: `url(${preview})` }} aria-hidden /><img src={preview} alt="" /></> : <span>No image yet</span>}</div>
+        <div className={`bannerPreview${fit === 'FILL' ? ' bannerCover' : ''}`} style={{ ['--focus' as any]: focus }}>{preview ? <><span className="bannerBlur" style={{ backgroundImage: `url(${preview})` }} aria-hidden /><img src={preview} alt="" /></> : <span>No image yet</span>}</div>
         <label className="upload">
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const x = e.target.files?.[0]; if (x) { setFile(x); setPreview(URL.createObjectURL(x)); } }} />
           🖼️ {file ? file.name : banner.image ? 'Replace image' : 'Upload banner image'}
-          <small>Any shape works: wide, square or tall posters are shown whole. JPG, PNG or WebP · max 5 MB.</small>
+          <small>Any shape works. Wide images (about 2:1, e.g. 1800 × 900) fill the slide best. JPG, PNG or WebP · max 5 MB. The preview shows how it will look.</small>
         </label>
         <div className="formGrid">
           <label className="full">Description <span className="opt">(read aloud to blind visitors, not shown)</span><input name="title" defaultValue={banner.title || ''} required maxLength={120} placeholder="e.g. Diwali sweets and diyas, 15% off" /></label>
           <label className="full">Opens when tapped <span className="opt">(optional)</span><input name="link" defaultValue={banner.link || ''} maxLength={300} placeholder="/shop?col=diwali-2026 or https://…" /></label>
+          <label>How it fits
+            <select value={fit} onChange={(e) => setFit(e.target.value)}>
+              <option value="FILL">Fill the whole slide (biggest; edges may be cut)</option>
+              <option value="WHOLE">Show the whole image (smaller, blurred sides)</option>
+            </select>
+          </label>
+          <label>Keep visible
+            <select value={focus} onChange={(e) => setFocus(e.target.value)} disabled={fit !== 'FILL'}>
+              <option value="top">Top part</option>
+              <option value="center">Middle</option>
+              <option value="bottom">Bottom part</option>
+            </select>
+          </label>
           <label>Display order<input name="sortOrder" type="number" defaultValue={banner.sortOrder ?? nextOrder} /></label>
           <span />
           <label>Show from <span className="opt">(optional)</span><input name="startsAt" type="datetime-local" defaultValue={toInputDate(banner.startsAt)} /></label>

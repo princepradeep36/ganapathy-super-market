@@ -60,17 +60,19 @@ export default async function Home() {
               </picture>
             </Link>
             {banners.map((b) => {
-              // Any shape fits: the whole poster is shown, on a blurred copy of itself filling the slide.
+              // FILL covers the slide (cropping to the chosen focus); WHOLE shows the entire poster on a blurred copy of itself.
               const img = (
                 <>
                   <span className="bannerBlur" style={{ backgroundImage: `url(${b.image})` }} aria-hidden />
                   <img src={b.image} alt={b.title} loading="lazy" />
                 </>
               );
-              if (!b.link) return <div key={b.id} className="banner bannerFit">{img}</div>;
+              const cls = `banner bannerFit${b.fit === 'WHOLE' ? '' : ' bannerCover'}`;
+              const style = { ['--focus' as any]: b.focus };
+              if (!b.link) return <div key={b.id} className={cls} style={style}>{img}</div>;
               return b.link.startsWith('/')
-                ? <Link key={b.id} href={b.link} className="banner bannerFit">{img}</Link>
-                : <a key={b.id} href={b.link} className="banner bannerFit" target="_blank" rel="noreferrer">{img}</a>;
+                ? <Link key={b.id} href={b.link} className={cls} style={style}>{img}</Link>
+                : <a key={b.id} href={b.link} className={cls} style={style} target="_blank" rel="noreferrer">{img}</a>;
             })}
             {slideOffers.length > 0 && (
               <SlidePanel eyebrow={t('Limited time')} title={t('Today’s offers')} href="/shop?offers=1" cta={t('All offers')} items={slideOffers} now={now} t={t} />

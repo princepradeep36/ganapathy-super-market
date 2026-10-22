@@ -107,11 +107,11 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
   return (
     <Modal title={banner.id ? 'Edit banner' : 'Add banner'} kicker="Banner" onClose={onClose} wide>
       <form onSubmit={save}>
-        <div className="bannerPreview">{preview ? <img src={preview} alt="" /> : <span>No image yet</span>}</div>
+        <div className="bannerPreview">{preview ? <><span className="bannerBlur" style={{ backgroundImage: `url(${preview})` }} aria-hidden /><img src={preview} alt="" /></> : <span>No image yet</span>}</div>
         <label className="upload">
           <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const x = e.target.files?.[0]; if (x) { setFile(x); setPreview(URL.createObjectURL(x)); } }} />
           🖼️ {file ? file.name : banner.image ? 'Replace image' : 'Upload banner image'}
-          <small>Wide image, 2:1 (e.g. 1800 × 900 px) · JPG, PNG or WebP · max 5 MB. Keep text away from the bottom edge; the search bar overlaps it.</small>
+          <small>Any shape works: wide, square or tall posters are shown whole. JPG, PNG or WebP · max 5 MB.</small>
         </label>
         <div className="formGrid">
           <label className="full">Description <span className="opt">(read aloud to blind visitors, not shown)</span><input name="title" defaultValue={banner.title || ''} required maxLength={120} placeholder="e.g. Diwali sweets and diyas, 15% off" /></label>

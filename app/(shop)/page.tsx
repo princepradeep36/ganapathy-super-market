@@ -60,11 +60,17 @@ export default async function Home() {
               </picture>
             </Link>
             {banners.map((b) => {
-              const img = <img src={b.image} width={1800} height={900} alt={b.title} loading="lazy" />;
-              if (!b.link) return <div key={b.id} className="banner">{img}</div>;
+              // Any shape fits: the whole poster is shown, on a blurred copy of itself filling the slide.
+              const img = (
+                <>
+                  <span className="bannerBlur" style={{ backgroundImage: `url(${b.image})` }} aria-hidden />
+                  <img src={b.image} alt={b.title} loading="lazy" />
+                </>
+              );
+              if (!b.link) return <div key={b.id} className="banner bannerFit">{img}</div>;
               return b.link.startsWith('/')
-                ? <Link key={b.id} href={b.link} className="banner">{img}</Link>
-                : <a key={b.id} href={b.link} className="banner" target="_blank" rel="noreferrer">{img}</a>;
+                ? <Link key={b.id} href={b.link} className="banner bannerFit">{img}</Link>
+                : <a key={b.id} href={b.link} className="banner bannerFit" target="_blank" rel="noreferrer">{img}</a>;
             })}
             {slideOffers.length > 0 && (
               <SlidePanel eyebrow={t('Limited time')} title={t('Today’s offers')} href="/shop?offers=1" cta={t('All offers')} items={slideOffers} now={now} t={t} />

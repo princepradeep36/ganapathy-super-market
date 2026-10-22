@@ -1000,3 +1000,19 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 /* Hero bar without the search box: the two promo cards side by side. */
 .heroBar { grid-template-columns: 1fr 1fr; }
 @media (max-width: 720px) { .heroBar { grid-template-columns: 1fr 1fr; } }
+
+/* Search as you type: suggestion list under the header search box. */
+.searchLive { position: relative; }
+.searchDrop { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 60; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 14px 40px rgba(0,0,0,.14); overflow: hidden auto; max-height: min(70vh, 560px); color: var(--ink); }
+.searchHit { display: flex; align-items: center; gap: 12px; padding: 8px 12px; text-decoration: none; color: inherit; border-bottom: 1px solid #f0efe9; }
+.searchHit.on { background: #f3f7ef; }
+.searchHit.out { opacity: .6; }
+.searchHit .pimg-sm { width: 44px; height: 44px; }
+.searchHitText { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.searchHitText b { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.searchHitText small { color: var(--muted); font-size: 12px; }
+.searchHitPrice { font-weight: 700; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-end; font-size: 14px; }
+.searchHitPrice s { color: var(--muted); font-weight: 400; font-size: 12px; }
+.searchMsg { margin: 0; padding: 14px; color: var(--muted); font-size: 14px; }
+.searchAll { display: block; width: 100%; text-align: left; padding: 12px 14px; border: 0; background: #fafaf6; color: var(--brand); font: inherit; font-weight: 600; cursor: pointer; }
+.searchAll:hover { background: #f3f7ef; }

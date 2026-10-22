@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { db } from '@/lib/db';
 import { mapEmbed, publicStore, siteUrl, store, telHref } from '@/lib/config';
 import Logo from '@/components/Logo';
@@ -8,6 +9,7 @@ import { LangProvider, LangSwitch } from '@/components/shop/I18n';
 import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
+import SearchBox from '@/components/shop/SearchBox';
 import { liveCollection } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
@@ -41,10 +43,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <Link className="logo" href="/" aria-label={t('{name} home', { name: store.name })}>
             <Logo />
           </Link>
-          <form className="search" action="/shop" role="search">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input name="q" type="search" placeholder={t('Search for atta, dal, paneer, masala…')} aria-label={t('Search products')} autoComplete="off" />
-          </form>
+          <Suspense fallback={<div className="search" />}><SearchBox /></Suspense>
           <Link href="/orders" className="headerLink hideSm">{t('My orders')}</Link>
           <CartButton />
         </div>

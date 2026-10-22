@@ -200,6 +200,10 @@ const sv: Record<string, string> = {
   'Showing matches for': 'Visar träffar för',
   'Clear search': 'Rensa sökningen',
   'No products found': 'Inga produkter hittades',
+  'Searching…': 'Söker…',
+  'See all results for “{q}”': 'Visa alla träffar för ”{q}”',
+  'Nothing found for “{q}”': 'Inget hittades för ”{q}”',
+  'Out of stock': 'Slut i lager',
   'Try another word, or browse all categories. Can’t find something? Call us — we can often order it in.': 'Prova ett annat ord eller bläddra bland alla kategorier. Hittar du inte något? Ring oss — vi kan ofta beställa hem det.',
   'Browse all products': 'Visa alla produkter',
 

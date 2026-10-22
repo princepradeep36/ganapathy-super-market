@@ -23,3 +23,18 @@ export const liveBanner = (now: Date): Prisma.BannerWhereInput => ({
   active: true,
   AND: [{ OR: [{ startsAt: null }, { startsAt: { lte: now } }] }, { OR: [{ endsAt: null }, { endsAt: { gt: now } }] }],
 });
+
+/** Product search: every word typed must appear in the name, description or (parent) category, in any order. */
+export function searchWhere(q: string): Prisma.ProductWhereInput {
+  const words = q.split(/\s+/).filter(Boolean).slice(0, 6);
+  return {
+    AND: words.map((w) => ({
+      OR: [
+        { name: { contains: w, mode: 'insensitive' as const } },
+        { description: { contains: w, mode: 'insensitive' as const } },
+        { category: { name: { contains: w, mode: 'insensitive' as const } } },
+        { category: { parent: { name: { contains: w, mode: 'insensitive' as const } } } },
+      ],
+    })),
+  };
+}

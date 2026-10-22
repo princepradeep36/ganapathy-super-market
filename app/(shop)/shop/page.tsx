@@ -6,7 +6,7 @@ import { activeSalePrice, effectivePrice } from '@/lib/pricing';
 import ProductCard from '@/components/shop/ProductCard';
 import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
-import { categoryTree, inCategory, liveCollection } from '@/lib/catalog';
+import { categoryTree, inCategory, liveCollection, searchWhere } from '@/lib/catalog';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -24,15 +24,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   const and: Prisma.ProductWhereInput[] = [];
   if (sp.cat) and.push(inCategory(sp.cat));
   if (sp.col) and.push({ collections: { some: { slug: sp.col, ...liveCollection(now) } } });
-  if (q)
-    and.push({
-      OR: [
-        { name: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { category: { name: { contains: q, mode: 'insensitive' } } },
-        { category: { parent: { name: { contains: q, mode: 'insensitive' } } } },
-      ],
-    });
+  if (q) and.push(searchWhere(q));
   const where: Prisma.ProductWhereInput = { active: true, AND: and };
   const [cats, all, collection] = await Promise.all([
     db.category.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { _count: { select: { products: { where: { active: true } } } } } }),

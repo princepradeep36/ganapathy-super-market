@@ -996,3 +996,7 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 /* Banner "Fill the whole slide": cover the slide, keep the chosen part (top/middle/bottom) visible. */
 .carousel .bannerCover img, .bannerPreview.bannerCover img { object-fit: cover; object-position: center var(--focus, center); }
 .bannerCover .bannerBlur { display: none; }
+
+/* Hero bar without the search box: the two promo cards side by side. */
+.heroBar { grid-template-columns: 1fr 1fr; }
+@media (max-width: 720px) { .heroBar { grid-template-columns: 1fr 1fr; } }

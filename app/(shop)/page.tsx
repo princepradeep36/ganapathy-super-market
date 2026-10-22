@@ -51,6 +51,7 @@ export default async function Home() {
   return (
     <main>
       <section className="hero">
+        <h1 className="sr-only">{t('{name} — Indian groceries in {area}', { name: store.name, area: store.deliveryArea })}</h1>
         <div className="wrap">
           <HeroCarousel labels={[t('Welcome'), ...banners.map((b) => b.title), ...(slideOffers.length ? [t('Offers')] : []), ...(slideBest.length ? [t('Popular items')] : []), t('Join our WhatsApp group')]}>
             <Link href="/shop" className="banner" aria-label={t('{name} — shop now', { name: store.name })}>
@@ -94,18 +95,6 @@ export default async function Home() {
             </div>
           </HeroCarousel>
           <div className="heroBar">
-            <div className="heroSearchBox">
-              <h1>{t('What are you cooking today?')}</h1>
-              <form className="heroSearch" action="/shop" role="search">
-                <input name="q" type="search" placeholder={t('Search rice, atta, dal, paneer, masala…')} aria-label={t('Search products')} />
-                <button className="btn">{t('Search')}</button>
-              </form>
-              <ul className="heroTrust">
-                <li><span aria-hidden>🏪</span><b>{t('Free')}</b> {t('store pickup')}</li>
-                <li><span aria-hidden>🚚</span><b>{t('Free delivery')}</b> {t('in {area} over {amount}', { area: store.deliveryArea, amount: sek(store.freeDeliveryMin) })}</li>
-                <li><span aria-hidden>💳</span><b>{t('Pay')}</b> {t('at pickup')}</li>
-              </ul>
-            </div>
             {coupon ? (
               <div className="promo promo-main">
                 <span className="promoTag">{coupon.name}</span>

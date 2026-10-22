@@ -68,6 +68,12 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
   const [preview, setPreview] = useState<string | null>(banner.image || null);
   const [fit, setFit] = useState<string>(banner.fit || 'FILL');
   const [focus, setFocus] = useState<string>(banner.focus || 'center');
+  // Picks the fit from the picture's shape: wide pictures fill the slide, tall or square posters are shown whole.
+  function autoFit(url: string) {
+    const img = new Image();
+    img.onload = () => { setFit(img.naturalWidth / img.naturalHeight >= 1.6 ? 'FILL' : 'WHOLE'); setFocus('center'); };
+    img.src = url;
+  }
 
   async function save(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -111,9 +117,9 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
       <form onSubmit={save}>
         <div className={`bannerPreview${fit === 'FILL' ? ' bannerCover' : ''}`} style={{ ['--focus' as any]: focus }}>{preview ? <><span className="bannerBlur" style={{ backgroundImage: `url(${preview})` }} aria-hidden /><img src={preview} alt="" /></> : <span>No image yet</span>}</div>
         <label className="upload">
-          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const x = e.target.files?.[0]; if (x) { setFile(x); setPreview(URL.createObjectURL(x)); } }} />
+          <input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => { const x = e.target.files?.[0]; if (x) { const url = URL.createObjectURL(x); setFile(x); setPreview(url); autoFit(url); } }} />
           🖼️ {file ? file.name : banner.image ? 'Replace image' : 'Upload banner image'}
-          <small>Any shape works. Wide images (about 2:1, e.g. 1800 × 900) fill the slide best. JPG, PNG or WebP · max 5 MB. The preview shows how it will look.</small>
+          <small>Any shape works: the fit is chosen automatically from the picture's shape (you can change it below). Wide images (about 2:1, e.g. 1800 × 900) fill the slide best. JPG, PNG or WebP · max 5 MB. The preview shows how it will look.</small>
         </label>
         <div className="formGrid">
           <label className="full">Description <span className="opt">(read aloud to blind visitors, not shown)</span><input name="title" defaultValue={banner.title || ''} required maxLength={120} placeholder="e.g. Diwali sweets and diyas, 15% off" /></label>

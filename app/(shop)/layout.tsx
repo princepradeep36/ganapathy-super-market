@@ -10,12 +10,14 @@ import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
 import SearchBox from '@/components/shop/SearchBox';
-import { liveCollection } from '@/lib/catalog';
+import OfferPopup from '@/components/shop/OfferPopup';
+import { INFO_PAGES, INFO_TITLES } from '@/lib/info';
+import { liveBanner, liveCollection } from '@/lib/catalog';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [categories, collections] = await Promise.all([
+  const [categories, collections, popup] = await Promise.all([
     db.category.findMany({
       where: { parentId: null, OR: [{ products: { some: { active: true } } }, { children: { some: { products: { some: { active: true } } } } }] },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
@@ -24,6 +26,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       where: { ...liveCollection(new Date()), products: { some: { active: true } } },
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     }),
+    db.banner.findFirst({ where: { ...liveBanner(new Date()), popup: true }, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] }),
   ]);
   const cfg = publicStore();
   const { lang, t } = await getT();
@@ -97,6 +100,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <iframe className="visitMap" src={mapEmbed()} title={t('Map: {address}', { address: store.address })} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
         </div>
       </section>
+      {popup && <OfferPopup popup={{ id: popup.id, image: popup.image, title: popup.title, link: popup.link, version: popup.image }} />}
       <footer className="footer">
         <div className="wrap footerGrid">
           <div>
@@ -113,8 +117,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <h4>{t('Help')}</h4>
             <Link href="/orders">{t('Track my order')}</Link>
             <Link href="/request">{t('Request a product')}</Link>
-            <span>{t('Pickup is always free')}</span>
-            <span>{t('Pay at pickup / on delivery')}{cfg.swish ? ' · Swish' : ''}</span>
+            {INFO_PAGES.map((x) => <Link key={x} href={`/info/${x}`}>{INFO_TITLES[x][lang]}</Link>)}
           </div>
           <div>
             <h4>{t('Visit us')}</h4>

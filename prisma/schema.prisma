@@ -149,6 +149,8 @@ model Banner {
   fit       String    @default("FILL")
   // Which part stays visible when filling: top, center or bottom.
   focus     String    @default("center")
+  // Also shown as a pop-up once per visit when someone opens the shop.
+  popup     Boolean   @default(false)
   createdAt DateTime  @default(now())
 }
 

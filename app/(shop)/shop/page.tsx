@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type SP = { q?: string; cat?: string; col?: string; sort?: string; offers?: string; instock?: string };
-const SORTS: [string, string][] = [['', 'Popular'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low'], ['discount', 'Biggest discount'], ['name', 'A–Z']];
+const SORTS: [string, string][] = [['', 'Popular'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low'], ['discount', 'Biggest discount'], ['name', 'A–Z'], ['new', 'Newest']];
 
 export default async function Shop({ searchParams }: { searchParams: Promise<SP> }) {
   const sp = await searchParams;
@@ -48,6 +48,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   if (sp.sort === 'price-desc') products = [...products].sort((a, b) => price(b) - price(a));
   if (sp.sort === 'discount') products = [...products].sort((a, b) => disc(b) - disc(a));
   if (sp.sort === 'name') products = [...products].sort((a, b) => a.name.localeCompare(b.name));
+  if (sp.sort === 'new') products = [...products].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   // Sold-out items always go last so customers see what they can buy first.
   products = [...products].sort((a, b) => Number(b.stock > 0) - Number(a.stock > 0));
 

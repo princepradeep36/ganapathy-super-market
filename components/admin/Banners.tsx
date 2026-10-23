@@ -42,7 +42,7 @@ export default function Banners({ banners }: { banners: any[] }) {
               <div className={`panel bannerAdmin${b.active ? '' : ' rowMuted'}`} key={b.id}>
                 <img src={b.image} alt="" />
                 <div className="bannerAdminInfo">
-                  <div><span className={`pill pill-${cls}`}>{label}</span> <small>Slide {i + 2} · order {b.sortOrder}</small></div>
+                  <div><span className={`pill pill-${cls}`}>{label}</span> <small>Slide {i + 2} · order {b.sortOrder}</small>{b.popup && <> <span className="pill pill-confirmed">Pop-up</span></>}</div>
                   <b>{b.title}</b>
                   {b.link && <small className="muted">Opens {b.link}</small>}
                   {b.endsAt && <small className="muted">Until {new Date(b.endsAt).toLocaleDateString('sv-SE')}</small>}
@@ -90,7 +90,7 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
       if (!image) throw new Error('Upload a banner image');
       const body = {
         image, title: f.get('title'), link: f.get('link'), sortOrder: f.get('sortOrder'), fit, focus,
-        startsAt: fromInputDate(f.get('startsAt')), endsAt: fromInputDate(f.get('endsAt')), active: f.get('active') === 'on',
+        startsAt: fromInputDate(f.get('startsAt')), endsAt: fromInputDate(f.get('endsAt')), active: f.get('active') === 'on', popup: f.get('popup') === 'on',
       };
       await api(banner.id ? '/api/admin/banners/' + banner.id : '/api/admin/banners', { method: banner.id ? 'PUT' : 'POST', json: body });
       toast(banner.id ? 'Banner saved' : 'Banner added');
@@ -142,6 +142,7 @@ function BannerForm({ banner, nextOrder, onClose, onSaved }: { banner: any; next
           <label>Show from <span className="opt">(optional)</span><input name="startsAt" type="datetime-local" defaultValue={toInputDate(banner.startsAt)} /></label>
           <label>Show until <span className="opt">(optional)</span><input name="endsAt" type="datetime-local" defaultValue={toInputDate(banner.endsAt)} /></label>
           <label className="check full"><input name="active" type="checkbox" defaultChecked={banner.active !== false} /> Show on home page</label>
+          <label className="check full"><input name="popup" type="checkbox" defaultChecked={!!banner.popup} /> Also show as a pop-up when someone opens the shop <span className="opt">(once per visit; if several are ticked, the first in display order is used)</span></label>
         </div>
         {err && <div className="alert alert-error">{err}</div>}
         <div className="modalActions">

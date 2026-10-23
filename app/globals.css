@@ -1016,3 +1016,17 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 .searchMsg { margin: 0; padding: 14px; color: var(--muted); font-size: 14px; }
 .searchAll { display: block; width: 100%; text-align: left; padding: 12px 14px; border: 0; background: #fafaf6; color: var(--brand); font: inherit; font-weight: 600; cursor: pointer; }
 .searchAll:hover { background: #f3f7ef; }
+
+/* Customer information pages (delivery, terms, privacy, FAQ). */
+.infoTabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.infoIntro { font-size: 17px; color: var(--muted); margin: 6px 0 8px; }
+.infoPage section { margin-top: 26px; }
+.infoPage h2 { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+.infoPage p, .infoPage li { line-height: 1.6; }
+.infoPage ul { padding-left: 20px; display: grid; gap: 4px; }
+
+/* Offer pop-up chosen in admin → Banners. */
+.offerPop { position: relative; width: min(460px, 100%); max-height: 88vh; animation: fade .2s; }
+.offerPop img { display: block; width: 100%; max-height: 88vh; object-fit: contain; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.35); background: #fff; }
+.offerPopClose { position: absolute; top: -12px; right: -12px; width: 36px; height: 36px; border-radius: 50%; border: 0; background: #fff; color: var(--ink); font-size: 24px; line-height: 1; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.25); z-index: 1; }
+@media (max-width: 520px) { .offerPopClose { top: 8px; right: 8px; } }

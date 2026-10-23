@@ -41,6 +41,7 @@ export default async function Home() {
   const categories = categoryTree(cats).map((c) => ({ ...c, total: c._count.products + c.children.reduce((a, s) => a + s._count.products, 0) }));
   const offers = products.filter((p) => p.stock > 0 && activeSalePrice(p, now) != null);
   const popular = products.filter((p) => p.stock > 0).slice(0, 10);
+  const newest = products.filter((p) => p.stock > 0).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, 12);
   // Best sellers by quantity ordered, topped up with popular items when there are few orders yet.
   const inStock = new Map(products.filter((p) => p.stock > 0).map((p) => [p.id, p]));
   const bestSellers = sold.map((s) => inStock.get(s.productId)).filter((p): p is (typeof products)[number] => !!p);
@@ -133,6 +134,16 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {newest.length > 0 && (
+        <section className="wrap section">
+          <div className="sectionHead">
+            <div><span className="eyebrow">{t('Just in')}</span><h2>{t('New arrivals')}</h2></div>
+            <Link href="/shop?sort=new" className="seeAll">{t('See all →')}</Link>
+          </div>
+          <div className="rail">{newest.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+        </section>
+      )}
 
       {collections.filter((c) => c.products.length > 0).map((c) => (
         <section className="wrap section collSection" key={c.id}>

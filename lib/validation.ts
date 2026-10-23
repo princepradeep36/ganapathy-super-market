@@ -90,6 +90,7 @@ const Banner = z.object({
   sortOrder: z.coerce.number().int().default(0),
   fit: z.enum(['FILL', 'WHOLE']).default('FILL'),
   focus: z.enum(['top', 'center', 'bottom']).default('center'),
+  popup: z.boolean().default(false),
 });
 
 export function bannerInput(raw: unknown) {

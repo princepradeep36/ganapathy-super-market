@@ -1,4 +1,9 @@
 # Public front door: gets and renews HTTPS certificates automatically.
+# RSA certificates: some company networks that inspect HTTPS cannot handle Caddy's default ECDSA ones.
+{
+	key_type rsa2048
+}
+
 # SITE_DOMAINS comes from .env, e.g. "ganapathysupermarket.com, www.ganapathysupermarket.com"
 {$SITE_DOMAINS} {
 	encode zstd gzip

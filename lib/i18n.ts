@@ -21,7 +21,16 @@ export function translator(lang: Lang): T {
 
 /** Category names by slug (the shop's own categories); other categories keep their name. */
 const CATEGORY_SV: Record<string, string> = {
-  'rice-grains': 'Ris & spannmål',
+  'rice-grains': 'Ris',
+  millets: 'Hirs',
+  'grains-poha': 'Poha & gryn',
+  'rice-basmati': 'Basmatiris',
+  'rice-ponni': 'Ponni- & råris',
+  'rice-sona-masoori': 'Sona Masoori & Kolam',
+  'rice-idli': 'Idli- & dosaris',
+  'rice-samba': 'Sambaris',
+  'rice-red-brown': 'Rött, brunt & Matta-ris',
+  'sooji-rava': 'Sooji & rava',
   'atta-flour': 'Atta & mjöl',
   'dals-lentils': 'Dal & linser',
   'fresh-vegetables': 'Färska grönsaker',
@@ -205,6 +214,7 @@ const sv: Record<string, string> = {
   'Nothing found for “{q}”': 'Inget hittades för ”{q}”',
   'Out of stock': 'Slut i lager',
   'Newest': 'Nyast',
+  'Other': 'Övrigt',
   'New arrivals': 'Nyheter',
   'Just in': 'Nytt i butiken',
   'Close': 'Stäng',

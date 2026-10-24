@@ -63,6 +63,16 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
     const s = u.toString();
     return '/shop' + (s ? '?' + s : '');
   };
+  // On a main category with sub-categories, show each sub-category as its own block so
+  // similar items (e.g. all Basmati rice) sit together.
+  const groups =
+    openMain && sp.cat === openMain.slug && openMain.children.length > 0 && !q && !sp.sort
+      ? [
+          ...openMain.children.map((s) => ({ id: s.id, slug: s.slug, name: categoryName(lang, s), items: products.filter((p) => p.categoryId === s.id) })),
+          { id: openMain.id, slug: '', name: t('Other'), items: products.filter((p) => !openMain.children.some((s) => s.id === p.categoryId)) },
+        ].filter((g) => g.items.length > 0)
+          .map((g) => ({ ...g, items: [...g.items].sort((a, b) => Number(b.stock > 0) - Number(a.stock > 0) || a.name.localeCompare(b.name)) }))
+      : null;
   const title = q ? t('Results for “{q}”', { q }) : collection ? `${collection.icon} ${collection.name}` : sp.offers ? t('Offers & deals') : current ? currentName : t('All products');
 
   return (
@@ -123,7 +133,19 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
         {q && <p className="muted searchNote">{t('Showing matches for')} <b>{q}</b>. <Link href={href({ q: undefined })}>{t('Clear search')}</Link></p>}
         {products.length ? (
           <>
-            <div className="pgrid">{products.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+            {groups ? (
+              groups.map((g) => (
+                <section key={g.id} className="subGroup">
+                  <div className="subGroupHead">
+                    <h2>{g.name}</h2>
+                    {g.slug && <Link href={href({ cat: g.slug })} className="seeAll">{t('See all →')}</Link>}
+                  </div>
+                  <div className="pgrid">{g.items.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+                </section>
+              ))
+            ) : (
+              <div className="pgrid">{products.map((p) => <ProductCard key={p.id} p={p} now={now} />)}</div>
+            )}
             <p className="requestNudge">{t('Can’t find what you need?')} <Link href="/request">{t('Ask us to stock it →')}</Link></p>
           </>
         ) : (

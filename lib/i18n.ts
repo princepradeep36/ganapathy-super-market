@@ -311,7 +311,7 @@ const sv: Record<string, string> = {
   'We’ll e-mail you a 6-digit code. No password needed.': 'Vi mejlar dig en 6-siffrig kod. Inget lösenord behövs.',
   'Send code': 'Skicka kod',
   '← Other ways to log in': '← Andra sätt att logga in',
-  'We sent a code to {email}. Check your inbox (and spam folder).': 'Vi har skickat en kod till {email}. Kolla inkorgen (och skräpposten).',
+  'We sent a code to {email}. Can’t find it? Check your spam folder and mark the e-mail as “Not spam”, so our e-mails reach your inbox next time.': 'Vi har skickat en kod till {email}. Hittar du den inte? Kolla skräpposten och markera mejlet som ”Inte skräppost”, så hamnar våra mejl i inkorgen nästa gång.',
   '6-digit code': '6-siffrig kod',
   'Use another e-mail or send a new code': 'Använd en annan e-post eller skicka en ny kod',
   'Log in with the same e-mail you use when ordering to see all your orders.': 'Logga in med samma e-post som du beställer med för att se alla dina ordrar.',

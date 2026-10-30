@@ -208,8 +208,9 @@ export async function sendLoginCode(to: string, code: string, minutes: number) {
   const html = layout('Your login code', `
 <p style="margin:0;font-size:15px;color:#3b4a41">Use this code to log in to ${esc(store.name)} and see your orders. It works for ${minutes} minutes.</p>
 <p style="margin:20px 0;font-size:32px;font-weight:800;letter-spacing:6px;color:#07432a">${code}</p>
+<p style="font-size:13px;color:#6b7a71">Found this in spam? Mark it as Not spam so our e-mails reach your inbox.</p>
 <p style="font-size:13px;color:#6b7a71">If you didn’t ask for this, ignore this e-mail; nobody can log in without the code.</p>`);
-  const text = `Your ${store.name} login code: ${code}\nIt works for ${minutes} minutes.\n\nIf you didn't ask for this, ignore this e-mail.`;
+  const text = `Your ${store.name} login code: ${code}\nIt works for ${minutes} minutes.\nFound this in spam? Mark it as Not spam so our e-mails reach your inbox.\n\nIf you didn't ask for this, ignore this e-mail.`;
   const c = mailConfig();
   const t = await getTransport();
   await t.sendMail({ from: `"${store.name}" <${c.user}>`, to, subject: `${code} is your ${store.name} login code`, html, text });

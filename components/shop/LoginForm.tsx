@@ -85,7 +85,7 @@ export default function LoginForm({ signup, google, facebook, error }: { signup:
 
       {step === 'code' && (
         <form onSubmit={verify} className="loginForm">
-          <p>{t('We sent a code to {email}. Check your inbox (and spam folder).', { email })}</p>
+          <p>{t('We sent a code to {email}. Can’t find it? Check your spam folder and mark the e-mail as “Not spam”, so our e-mails reach your inbox next time.', { email })}</p>
           <label>{t('6-digit code')}<input name="code" required autoFocus inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,7}" maxLength={7} className="codeInput" /></label>
           <button className="btn btn-lg btn-block" disabled={busy}>{t(verb)}</button>
           <button type="button" className="linkBtn" onClick={() => { setErr(''); setStep('email'); }}>{t('Use another e-mail or send a new code')}</button>

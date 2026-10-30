@@ -202,3 +202,15 @@ ${button(link, 'Choose a new password')}
   const text = `${title}\n\n${loginEmail ? `Sign-in e-mail: ${loginEmail}\n\n` : ''}Choose a new password (valid ${minutes} minutes):\n${link}\n\nIf you didn't ask for this, ignore this e-mail.`;
   await send(to, `${title} · ${store.name}`, html, text);
 }
+
+/** 6-digit code for a customer logging in with e-mail. Throws if it could not be sent. */
+export async function sendLoginCode(to: string, code: string, minutes: number) {
+  const html = layout('Your login code', `
+<p style="margin:0;font-size:15px;color:#3b4a41">Use this code to log in to ${esc(store.name)} and see your orders. It works for ${minutes} minutes.</p>
+<p style="margin:20px 0;font-size:32px;font-weight:800;letter-spacing:6px;color:#07432a">${code}</p>
+<p style="font-size:13px;color:#6b7a71">If you didn’t ask for this, ignore this e-mail; nobody can log in without the code.</p>`);
+  const text = `Your ${store.name} login code: ${code}\nIt works for ${minutes} minutes.\n\nIf you didn't ask for this, ignore this e-mail.`;
+  const c = mailConfig();
+  const t = await getTransport();
+  await t.sendMail({ from: `"${store.name}" <${c.user}>`, to, subject: `${code} is your ${store.name} login code`, html, text });
+}

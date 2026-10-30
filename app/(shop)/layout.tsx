@@ -13,11 +13,12 @@ import SearchBox from '@/components/shop/SearchBox';
 import OfferPopup from '@/components/shop/OfferPopup';
 import { INFO_PAGES, INFO_TITLES } from '@/lib/info';
 import { liveBanner, liveCollection } from '@/lib/catalog';
+import { currentCustomer } from '@/lib/customer';
 
 export const dynamic = 'force-dynamic';
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [categories, collections, popup] = await Promise.all([
+  const [categories, collections, popup, customer] = await Promise.all([
     db.category.findMany({
       where: { parentId: null, OR: [{ products: { some: { active: true } } }, { children: { some: { products: { some: { active: true } } } } }] },
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
@@ -27,6 +28,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }],
     }),
     db.banner.findFirst({ where: { ...liveBanner(new Date()), popup: true }, orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }] }),
+    currentCustomer(),
   ]);
   const cfg = publicStore();
   const { lang, t } = await getT();
@@ -48,6 +50,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           </Link>
           <Suspense fallback={<div className="search" />}><SearchBox /></Suspense>
           <Link href="/orders" className="headerLink hideSm">{t('My orders')}</Link>
+          {!customer && <Link href="/login" className="headerLink hideSm">{t('Log in')}</Link>}
           <CartButton />
         </div>
         <nav className="catbar" aria-label={t('Categories')}>

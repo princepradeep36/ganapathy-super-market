@@ -8,11 +8,11 @@ datasource db {
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  icon      String    @default("🛒")
-  sortOrder Int       @default(0)
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  icon      String     @default("🛒")
+  sortOrder Int        @default(0)
   // Set for a sub-category (e.g. Rice → 5 kg). Only one level deep.
   parentId  String?
   parent    Category?  @relation("SubCategories", fields: [parentId], references: [id])
@@ -20,7 +20,9 @@ model Category {
   products  Product[]
 }
 
-/** Seasonal shelves such as "Diwali 2026": one product can be in several. */
+/**
+ * Seasonal shelves such as "Diwali 2026": one product can be in several.
+ */
 model Collection {
   id          String    @id @default(cuid())
   name        String    @unique
@@ -35,7 +37,9 @@ model Collection {
   createdAt   DateTime  @default(now())
 }
 
-/** "Can you stock this?" requests from customers. */
+/**
+ * "Can you stock this?" requests from customers.
+ */
 model ProductRequest {
   id          String   @id @default(cuid())
   productName String
@@ -50,24 +54,24 @@ model ProductRequest {
 }
 
 model Product {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   name        String
-  slug        String      @unique
+  slug        String       @unique
   description String
   unit        String?
   price       Int
   salePrice   Int?
   saleStart   DateTime?
   saleEnd     DateTime?
-  stock       Int         @default(0)
+  stock       Int          @default(0)
   image       String
-  active      Boolean     @default(true)
-  featured    Boolean     @default(false)
+  active      Boolean      @default(true)
+  featured    Boolean      @default(false)
   categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
   collections Collection[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   orderItems  OrderItem[]
 
   @@index([active, categoryId])
@@ -135,7 +139,9 @@ model OrderItem {
   product          Product @relation(fields: [productId], references: [id])
 }
 
-/** Extra home page banner slides, shown after the main banner in sortOrder. */
+/**
+ * Extra home page banner slides, shown after the main banner in sortOrder.
+ */
 model Banner {
   id        String    @id @default(cuid())
   image     String
@@ -154,7 +160,9 @@ model Banner {
   createdAt DateTime  @default(now())
 }
 
-/** The single store admin. A password set via "Forgot password" replaces ADMIN_PASSWORD. */
+/**
+ * The single store admin. A password set via "Forgot password" replaces ADMIN_PASSWORD.
+ */
 model AdminAccount {
   id              String    @id @default("admin")
   passwordHash    String?
@@ -165,7 +173,9 @@ model AdminAccount {
   updatedAt       DateTime  @updatedAt
 }
 
-/** Delivery / pickup times offered at checkout, set by the admin. */
+/**
+ * Delivery / pickup times offered at checkout, set by the admin.
+ */
 model DeliverySchedule {
   id            String   @id @default("main")
   // Weekdays with slots: 0 = Sunday … 6 = Saturday.
@@ -177,4 +187,33 @@ model DeliverySchedule {
   closedDates   String[]
   allowAsap     Boolean  @default(true)
   updatedAt     DateTime @updatedAt
+}
+
+/**
+ * A shopper who logs in to see their orders. Orders are linked by e-mail.
+ */
+model Customer {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String?
+  googleId       String?  @unique
+  facebookId     String?  @unique
+  // Bumped on "log out everywhere" so older sessions stop working.
+  sessionVersion Int      @default(0)
+  createdAt      DateTime @default(now())
+  lastLoginAt    DateTime @default(now())
+}
+
+/**
+ * One-time 6-digit code for logging in with e-mail.
+ */
+model LoginCode {
+  id        String   @id @default(cuid())
+  email     String
+  codeHash  String
+  attempts  Int      @default(0)
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email, createdAt])
 }

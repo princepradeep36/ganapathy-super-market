@@ -10,6 +10,7 @@ import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
 import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
 import SearchBox from '@/components/shop/SearchBox';
+import { LaunchStrip } from '@/components/shop/LaunchNotice';
 import OfferPopup from '@/components/shop/OfferPopup';
 import { INFO_PAGES, INFO_TITLES } from '@/lib/info';
 import { liveBanner, liveCollection } from '@/lib/catalog';
@@ -66,6 +67,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           </div>
         </nav>
       </header>
+      <LaunchStrip lang={lang} t={t} />
       <div className="page">{children}</div>
       <section className="waJoin" aria-labelledby="waJoinTitle">
         <div className="wrap">

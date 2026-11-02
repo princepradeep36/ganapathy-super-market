@@ -27,6 +27,13 @@ export const store = {
   deliveryPrefixes: (process.env.DELIVERY_POSTCODE_PREFIXES || '250,251,252,253,254,255,256').split(',').map((s) => s.trim()).filter(Boolean),
 };
 
+/** When online orders open (the grand launch); until then the shop is browse-only. An invalid ORDERS_OPEN_AT means open. */
+export const ordersOpenAt = () => {
+  const d = new Date(process.env.ORDERS_OPEN_AT || '2026-11-15T00:00:00+01:00');
+  return Number.isNaN(d.getTime()) ? new Date(0) : d;
+};
+export const ordersOpen = (now = new Date()) => now >= ordersOpenAt();
+
 /** Phone in international format for tel: links, e.g. 073-577 35 60 → +46735773560. */
 export const telHref = () => {
   const d = store.phone.replace(/[^\d+]/g, '');

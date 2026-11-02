@@ -1059,3 +1059,11 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 .loginCta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 14px 0; }
 .loginCta p { margin: 0; }
 .headerLink + .headerLink { margin-left: 0; }
+
+/* Grand launch: strip under the header and card at checkout, until orders open */
+.launchStrip { background: linear-gradient(90deg, #7a1f00, #b5420c 50%, #7a1f00); color: #fff; text-align: center; font-size: 15px; padding: 10px 0; border-bottom: 2px solid var(--gold); }
+.launchStrip b { color: #ffd166; }
+.launchCard { text-align: center; display: grid; gap: 12px; justify-items: center; padding: 36px 24px; }
+.launchCard h1 { margin: 0; font-size: 28px; }
+.launchCard p { margin: 0; max-width: 46ch; }
+.launchIcon { font-size: 48px; }

@@ -3,7 +3,7 @@ import type { Coupon } from '@prisma/client';
 import { db } from '@/lib/db';
 import { activeSalePrice } from '@/lib/pricing';
 import { couponDiscount } from '@/lib/coupons';
-import { deliveryFeeFor, inDeliveryArea, store } from '@/lib/config';
+import { deliveryFeeFor, inDeliveryArea, ordersOpen, store } from '@/lib/config';
 import { queueMail, sendOrderPlaced } from '@/lib/email';
 import { clientIp, rateLimit } from '@/lib/ratelimit';
 import { newOrderNumber } from '@/lib/orderNo';
@@ -30,6 +30,7 @@ const S = z
 
 export async function POST(req: Request) {
   try {
+    if (!ordersOpen()) throw new Error('Online orders have not opened yet. See you at our grand launch!');
     if (!rateLimit('order:' + clientIp(req), 10, 10 * 60_000)) throw new Error('Too many orders in a short time. Please call the store.');
     const d = S.parse(await req.json());
     // The chosen time must still be on offer (admin can change days, slots and cut-off).

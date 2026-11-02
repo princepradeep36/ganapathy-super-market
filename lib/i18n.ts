@@ -58,6 +58,13 @@ export function translateError(lang: Lang, msg: string) {
 }
 
 const sv: Record<string, string> = {
+  // Grand launch
+  'Grand launch on {date} for Diwali!': 'Stor invigning den {date} till Diwali!',
+  'Online orders open then. Wait for our exciting launch offers!': 'Då öppnar vi för beställningar på nätet. Håll utkik efter våra spännande invigningserbjudanden!',
+  'You can browse all our products now. Online ordering opens on {date}, with exciting launch offers.': 'Du kan redan nu titta på alla våra varor. Beställning på nätet öppnar den {date}, med spännande invigningserbjudanden.',
+  'Your basket is saved on this device, so you can order as soon as we open.': 'Din varukorg sparas på den här enheten, så du kan beställa så fort vi öppnar.',
+  'Keep browsing': 'Fortsätt titta',
+  'Online orders have not opened yet. See you at our grand launch!': 'Beställningar på nätet har inte öppnat än. Välkommen till vår invigning!',
   // Language switch
   'Language': 'Språk',
 

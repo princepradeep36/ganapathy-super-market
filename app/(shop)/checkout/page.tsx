@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { publicStore, store } from '@/lib/config';
+import { ordersOpen, publicStore, store } from '@/lib/config';
 import Checkout from '@/components/shop/Checkout';
+import { LaunchCheckout } from '@/components/shop/LaunchNotice';
 import { getT } from '@/lib/i18n-server';
 import { availableSlots, getSchedule } from '@/lib/schedule';
 
@@ -12,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function CheckoutPage() {
-  const { lang } = await getT();
+  const { lang, t } = await getT();
+  if (!ordersOpen()) return <LaunchCheckout lang={lang} t={t} />;
   const schedule = await getSchedule();
   return (
     <Checkout

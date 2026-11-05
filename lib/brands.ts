@@ -129,6 +129,31 @@ const LIST: [string, ...string[]][] = [
 
 export type Brand = { name: string; slug: string };
 
+// Brand logos in public/brand-logos, by brand slug. Brands without one show a product photo.
+const LOGOS: Record<string, string> = {
+  'a-1-chips': '/brand-logos/a-1-chips.jpeg',
+  'a2b': '/brand-logos/a2b.png',
+  'anil': '/brand-logos/anil.jpeg',
+  'annam': '/brand-logos/annam.jpeg',
+  'chakra': '/brand-logos/chakra.jpeg',
+  'haldirams': '/brand-logos/haldirams.png',
+  'heera': '/brand-logos/heera.jpeg',
+  'india-gate': '/brand-logos/india-gate.png',
+  'kissan': '/brand-logos/kissan.jpeg',
+  'lg': '/brand-logos/lg.png',
+  'mtr': '/brand-logos/mtr.png',
+  'narasus': '/brand-logos/narasus.jpeg',
+  'native-food-store': '/brand-logos/native-food-store.jpeg',
+  'nutrapoorna': '/brand-logos/nutrapoorna.jpeg',
+  'pavithram': '/brand-logos/pavithram.png',
+  'pillsbury': '/brand-logos/pillsbury.png',
+  'shan': '/brand-logos/shan.jpeg',
+  'swetha': '/brand-logos/swetha.png',
+  'trs': '/brand-logos/trs.jpeg',
+  'udhaiyam': '/brand-logos/udhaiyam.png',
+};
+export const brandLogo = (slug: string): string | null => LOGOS[slug] ?? null;
+
 const slug = (s: string) => s.toLowerCase().replace(/['’.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 export const BRANDS: Brand[] = LIST.map(([name]) => ({ name, slug: slug(name) }));
@@ -146,11 +171,11 @@ export const brandBySlug = (s: string) => BRANDS.find((b) => b.slug === s) ?? nu
 
 /** Brands that have products, with a count and a photo to show, biggest first. */
 export function brandsWithProducts<P extends { name: string; image: string; stock: number }>(products: P[]) {
-  const map = new Map<string, Brand & { count: number; image: string | null }>();
+  const map = new Map<string, Brand & { count: number; image: string | null; logo: string | null }>();
   for (const p of products) {
     const b = brandOf(p.name);
     if (!b) continue;
-    const e = map.get(b.slug) ?? { ...b, count: 0, image: null };
+    const e = map.get(b.slug) ?? { ...b, count: 0, image: null, logo: brandLogo(b.slug) };
     e.count++;
     // Use an in-stock product's real photo as the brand's picture.
     if (!e.image && p.stock > 0 && (p.image.startsWith('/') || p.image.startsWith('http'))) e.image = p.image;

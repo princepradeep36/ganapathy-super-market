@@ -11,7 +11,7 @@ import { getT } from '@/lib/i18n-server';
 import { categoryName, type T } from '@/lib/i18n';
 import { categoryTree, liveBanner, liveCollection } from '@/lib/catalog';
 import { brandsWithProducts } from '@/lib/brands';
-import BrandTile from '@/components/shop/BrandTile';
+import BrandStrip from '@/components/shop/BrandStrip';
 
 export default async function Home() {
   const now = new Date();
@@ -138,17 +138,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {brands.length > 0 && (
-        <section className="wrap section">
-          <div className="sectionHead">
-            <div><span className="eyebrow">{t('{n} brands', { n: brands.length })}</span><h2>{t('Shop by brand')}</h2></div>
-            <Link href="/brands" className="seeAll">{t('All brands →')}</Link>
-          </div>
-          <div className="brandGrid brandGridHome">
-            {brands.slice(0, 16).map((b) => <BrandTile key={b.slug} b={b} t={t} />)}
-          </div>
-        </section>
-      )}
+      <BrandStrip brands={brands.filter((b) => b.logo).map((b) => ({ name: b.name, slug: b.slug, logo: b.logo! }))} t={t} />
 
       {newest.length > 0 && (
         <section className="wrap section">

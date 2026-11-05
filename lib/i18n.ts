@@ -163,6 +163,7 @@ const sv: Record<string, string> = {
   'Shop today’s deals →': 'Handla dagens erbjudanden →',
   'Shop by category': 'Handla efter kategori',
   'Shop by brand': 'Handla efter varumärke',
+  'Our brands': 'Våra varumärken',
   'All brands →': 'Alla varumärken →',
   'All brands': 'Alla varumärken',
   'Brands': 'Varumärken',

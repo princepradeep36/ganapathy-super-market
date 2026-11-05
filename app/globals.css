@@ -1090,3 +1090,26 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
   .brandPic { width: 64px; height: 64px; }
   .brandTile b { font-size: 13px; }
 }
+
+/* ---------- "Our brands" logo strip ---------- */
+.brandStrip { background: #141414; color: #fff; padding: 22px 0 26px; margin-top: 36px; }
+.brandStripHead { display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 16px; }
+.brandStripHead h2 { color: #fff; margin: 0; font-size: 22px; }
+.brandStripHead .seeAll { position: absolute; right: 16px; }
+.brandMarquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.brandTrack { display: flex; gap: 14px; width: max-content; animation: brandSlide calc(var(--n) * 2.4s) linear infinite; }
+.brandMarquee:hover .brandTrack, .brandMarquee:focus-within .brandTrack { animation-play-state: paused; }
+.brandLogo { flex: none; width: 92px; height: 92px; border-radius: 14px; background: #fff; display: grid; place-items: center; overflow: hidden; transition: transform .15s, box-shadow .15s; }
+.brandLogo:hover { transform: translateY(-3px); box-shadow: 0 0 0 3px var(--gold, #d4a234); }
+.brandLogo img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+@keyframes brandSlide { from { transform: translateX(0); } to { transform: translateX(calc(-50% - 7px)); } }
+@media (max-width: 720px) {
+  .brandStripHead { justify-content: space-between; padding: 0 16px; }
+  .brandStripHead .seeAll { position: static; }
+  .brandLogo { width: 76px; height: 76px; border-radius: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brandTrack { animation: none; }
+  .brandMarquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+}
+.brandPic img.isLogo { padding: 4px; }

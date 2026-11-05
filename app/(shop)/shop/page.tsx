@@ -7,13 +7,14 @@ import ProductCard from '@/components/shop/ProductCard';
 import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
 import { categoryTree, inCategory, liveCollection, searchWhere } from '@/lib/catalog';
+import { brandBySlug, brandOf } from '@/lib/brands';
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
   return { title: t('Shop') };
 }
 
-type SP = { q?: string; cat?: string; col?: string; sort?: string; offers?: string; instock?: string };
+type SP = { q?: string; cat?: string; col?: string; brand?: string; sort?: string; offers?: string; instock?: string };
 const SORTS: [string, string][] = [['', 'Popular'], ['price-asc', 'Price: low to high'], ['price-desc', 'Price: high to low'], ['discount', 'Biggest discount'], ['name', 'A–Z'], ['new', 'Newest']];
 
 export default async function Shop({ searchParams }: { searchParams: Promise<SP> }) {
@@ -26,7 +27,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
   if (sp.col) and.push({ collections: { some: { slug: sp.col, ...liveCollection(now) } } });
   if (q) and.push(searchWhere(q));
   const where: Prisma.ProductWhereInput = { active: true, AND: and };
-  const [cats, all, collection] = await Promise.all([
+  const [rawCats, all, collection, brandItems] = await Promise.all([
     db.category.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }], include: { _count: { select: { products: { where: { active: true } } } } } }),
     db.product.findMany({
       where,
@@ -34,12 +35,19 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
       orderBy: [{ featured: 'desc' }, { createdAt: 'asc' }],
     }),
     sp.col ? db.collection.findFirst({ where: { slug: sp.col, ...liveCollection(now) } }) : null,
+    sp.brand ? db.product.findMany({ where: { active: true }, select: { name: true, categoryId: true } }) : null,
   ]);
+  // On a brand page the category list counts only that brand's products, and hides empty ones.
+  const brandCount = new Map<string, number>();
+  for (const p of brandItems ?? []) if (brandOf(p.name)?.slug === sp.brand) brandCount.set(p.categoryId, (brandCount.get(p.categoryId) ?? 0) + 1);
+  const cats = brandItems ? rawCats.map((c) => ({ ...c, _count: { products: brandCount.get(c.id) ?? 0 } })) : rawCats;
   // Main categories with their sub-categories; counts include the sub-categories' products.
   const categories = categoryTree(cats)
     .map((c) => ({ ...c, children: c.children.filter((s) => s._count.products > 0), total: c._count.products + c.children.reduce((a, s) => a + s._count.products, 0) }))
     .filter((c) => c.total > 0);
+  const brand = sp.brand ? brandBySlug(sp.brand) : null;
   let products = all;
+  if (sp.brand) products = products.filter((p) => brandOf(p.name)?.slug === sp.brand);
   if (sp.offers) products = products.filter((p) => activeSalePrice(p, now) != null);
   if (sp.instock) products = products.filter((p) => p.stock > 0);
   const price = (p: (typeof all)[number]) => effectivePrice(p, now);
@@ -73,7 +81,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
         ].filter((g) => g.items.length > 0)
           .map((g) => ({ ...g, items: [...g.items].sort((a, b) => Number(b.stock > 0) - Number(a.stock > 0) || a.name.localeCompare(b.name)) }))
       : null;
-  const title = q ? t('Results for “{q}”', { q }) : collection ? `${collection.icon} ${collection.name}` : sp.offers ? t('Offers & deals') : current ? currentName : t('All products');
+  const title = q ? t('Results for “{q}”', { q }) : brand && !current ? brand.name : collection ? `${collection.icon} ${collection.name}` : sp.offers ? t('Offers & deals') : current ? currentName : t('All products');
 
   return (
     <main className="wrap shopPage">
@@ -101,6 +109,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
             <nav className="crumbs">
               <Link href="/">{t('Home')}</Link> / <Link href="/shop">{t('Shop')}</Link>
               {openMain && openMain.slug !== sp.cat && <> / <Link href={href({ cat: openMain.slug })}>{categoryName(lang, openMain)}</Link></>}
+              {brand && <> / <Link href="/brands">{t('Brands')}</Link> / {current ? <Link href={href({ cat: undefined })}>{brand.name}</Link> : brand.name}</>}
               {current && <> / {currentName}</>}
             </nav>
             <h1>{title}</h1>
@@ -123,6 +132,7 @@ export default async function Shop({ searchParams }: { searchParams: Promise<SP>
           </div>
         )}
         <div className="chipRow">
+          {brand && <Link href={href({ brand: undefined })} className="chip on" aria-label={t('Remove brand filter')}>{t('Brand: {name}', { name: brand.name })} ✕</Link>}
           <Link href={href({ offers: sp.offers ? undefined : '1' })} className={`chip${sp.offers ? ' on' : ''}`}>{t('🏷️ On offer')}</Link>
           <Link href={href({ instock: sp.instock ? undefined : '1' })} className={`chip${sp.instock ? ' on' : ''}`}>{t('In stock')}</Link>
           <span className="chipSep" />

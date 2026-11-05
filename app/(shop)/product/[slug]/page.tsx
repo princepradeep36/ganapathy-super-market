@@ -10,6 +10,7 @@ import ProductImage from '@/components/shop/ProductImage';
 import QtyButton from '@/components/shop/QtyButton';
 import { getT } from '@/lib/i18n-server';
 import { categoryName } from '@/lib/i18n';
+import { brandOf } from '@/lib/brands';
 
 type P = { params: Promise<{ slug: string }> };
 
@@ -27,6 +28,7 @@ export default async function ProductPage({ params }: P) {
   const cat = categoryName(lang, p.category);
   const now = new Date();
   const sale = activeSalePrice(p, now);
+  const brand = brandOf(p.name);
   const related = await db.product.findMany({
     where: { active: true, categoryId: p.categoryId, id: { not: p.id } },
     include: { category: true },
@@ -46,6 +48,7 @@ export default async function ProductPage({ params }: P) {
         </div>
         <div className="pdpInfo">
           <Link href={`/shop?cat=${p.category.slug}`} className="pcardCat">{cat}</Link>
+          {brand && <> <span className="pcardCat" aria-hidden>·</span> <Link href={`/shop?brand=${brand.slug}`} className="pcardCat pdpBrand">{t('More from {brand}', { brand: brand.name })}</Link></>}
           <h1>{p.name}</h1>
           {p.unit && <p className="pdpUnit">{p.unit}</p>}
           <div className="pdpPrice">

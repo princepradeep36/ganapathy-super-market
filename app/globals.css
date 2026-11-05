@@ -1067,3 +1067,26 @@ h1, h2, .sectionHead h2, .resultsHead h1, .pdpInfo h1, .checkoutHead h1, .orderP
 .launchCard h1 { margin: 0; font-size: 28px; }
 .launchCard p { margin: 0; max-width: 46ch; }
 .launchIcon { font-size: 48px; }
+
+/* ---------- Shop by brand ---------- */
+.brandGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); gap: 12px; }
+.brandTile { background: #fff; border: 1px solid var(--line); border-radius: var(--r); padding: 14px 10px 12px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 3px; color: var(--ink); transition: transform .15s, box-shadow .15s, border-color .15s; }
+.brandTile:hover { transform: translateY(-3px); box-shadow: var(--sh); border-color: var(--gold, #d4a234); }
+.brandPic { width: 76px; height: 76px; border-radius: 50%; background: #fff; border: 2px solid var(--gold-l, #f6e7b8); display: grid; place-items: center; overflow: hidden; margin-bottom: 6px; }
+.brandPic img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+.brandInitial { font-weight: 800; font-size: 22px; color: var(--brand); letter-spacing: .02em; }
+.brandTile b { font-size: 14px; line-height: 1.2; }
+.brandTile small { color: var(--muted); font-size: 12px; }
+.brandLetters { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 6px; }
+.brandLetters a { min-width: 34px; height: 34px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--line); background: #fff; display: grid; place-items: center; font-weight: 700; color: var(--brand); }
+.brandLetters a:hover { background: var(--brand-l); }
+.brandGroup { scroll-margin-top: 120px; margin-top: 22px; }
+.brandGroup h2 { font-size: 20px; margin: 0 0 10px; color: var(--brand); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.pdpBrand { color: var(--brand); }
+@media (max-width: 720px) {
+  .brandGridHome { grid-template-columns: none; grid-auto-flow: column; grid-template-rows: repeat(2, auto); grid-auto-columns: 108px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .brandGridHome > * { scroll-snap-align: start; }
+  .brandGrid { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+  .brandPic { width: 64px; height: 64px; }
+  .brandTile b { font-size: 13px; }
+}

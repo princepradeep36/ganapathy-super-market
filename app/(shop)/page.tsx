@@ -10,6 +10,8 @@ import WhatsAppIcon from '@/components/shop/WhatsAppIcon';
 import { getT } from '@/lib/i18n-server';
 import { categoryName, type T } from '@/lib/i18n';
 import { categoryTree, liveBanner, liveCollection } from '@/lib/catalog';
+import { brandsWithProducts } from '@/lib/brands';
+import BrandTile from '@/components/shop/BrandTile';
 
 export default async function Home() {
   const now = new Date();
@@ -46,6 +48,7 @@ export default async function Home() {
   const inStock = new Map(products.filter((p) => p.stock > 0).map((p) => [p.id, p]));
   const bestSellers = sold.map((s) => inStock.get(s.productId)).filter((p): p is (typeof products)[number] => !!p);
   for (const p of popular) if (bestSellers.length < 4 && !bestSellers.includes(p)) bestSellers.push(p);
+  const brands = brandsWithProducts(products);
   const slideOffers = offers.slice(0, 4);
   const slideBest = bestSellers.slice(0, 4);
 
@@ -134,6 +137,18 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {brands.length > 0 && (
+        <section className="wrap section">
+          <div className="sectionHead">
+            <div><span className="eyebrow">{t('{n} brands', { n: brands.length })}</span><h2>{t('Shop by brand')}</h2></div>
+            <Link href="/brands" className="seeAll">{t('All brands →')}</Link>
+          </div>
+          <div className="brandGrid brandGridHome">
+            {brands.slice(0, 16).map((b) => <BrandTile key={b.slug} b={b} t={t} />)}
+          </div>
+        </section>
+      )}
 
       {newest.length > 0 && (
         <section className="wrap section">

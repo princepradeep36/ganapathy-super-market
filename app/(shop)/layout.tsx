@@ -58,6 +58,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
           <div className="wrap catbarIn">
             <Link href="/shop">{t('All')}</Link>
             <Link href="/shop?offers=1" className="hot">{t('🏷️ Offers')}</Link>
+            <Link href="/brands">{t('Brands')}</Link>
             {collections.map((c) => (
               <Link key={c.id} href={`/shop?col=${c.slug}`} className="hot">{c.icon} {c.name}</Link>
             ))}
@@ -116,6 +117,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
             <h4>{t('Shop')}</h4>
             <Link href="/shop">{t('All products')}</Link>
             <Link href="/shop?offers=1">{t('Offers')}</Link>
+            <Link href="/brands">{t('All brands')}</Link>
             {categories.slice(0, 4).map((c) => <Link key={c.id} href={`/shop?cat=${c.slug}`}>{categoryName(lang, c)}</Link>)}
           </div>
           <div>
